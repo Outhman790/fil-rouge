@@ -33,3 +33,12 @@ if ! curl -s --max-time 10 http://localhost | grep -q "<title>"; then
   git reset --hard $PREV_COMMIT
   composer install --no-dev --prefer-dist --no-interaction
   echo "✅ Rolled back to previous commit: $PREV_COMMIT" | tee -a $LOG_FILE
+  exit 1
+fi
+
+# Reload services
+echo "🔁 Reloading PHP-FPM and Nginx..." | tee -a $LOG_FILE
+systemctl reload php8.1-fpm
+systemctl reload nginx
+
+echo "✅ Deployment successful at $(date '+%F %T')" | tee -a $LOG_FILE

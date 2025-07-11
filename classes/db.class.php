@@ -5,8 +5,8 @@ class DB
     protected $conn;
     protected $host = 'localhost';
     protected $dbname = 'sandik';
-    protected $username = 'root';
-    protected $password = '';
+    protected $username = 'outhman790';
+    protected $password = 'outhman790..!!';
 
 
     public function connect()

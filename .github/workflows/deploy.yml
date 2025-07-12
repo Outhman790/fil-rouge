@@ -26,8 +26,13 @@ jobs:
         run: |
           ssh -i key.pem -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
             echo "✅ Connected to EC2"
+
             git config --global --add safe.directory /var/www/sandik
+
             cd /var/www/sandik || { echo "❌ Folder not found"; exit 1; }
+
+            echo "🔐 Making deploy.sh executable..."
+            chmod +x deploy.sh
 
             echo "▶️ Running deploy.sh"
             ./deploy.sh || { echo "❌ Deployment script failed"; exit 1; }

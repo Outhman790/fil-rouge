@@ -29,11 +29,13 @@ jobs:
 
             echo "🛠️ Adding project to Git safe.directory"
             git config --global --add safe.directory /var/www/sandik
-            
+
             cd /var/www/sandik || { echo "❌ Project folder not found"; exit 1; }
             
-            echo "🔐 Fixing ownership of project files..."
+            echo "🔐 Fixing ownership before Composer..."
             sudo chown -R ubuntu:ubuntu /var/www/sandik
+            sudo chown -R www-data:www-data /var/www/sandik/vendor
+
 
             echo "🔐 Making deploy.sh executable..."
             echo "ℹ️ Setting ownership to ubuntu:ubuntu"

@@ -30,6 +30,9 @@ jobs:
 
             cd /var/www/sandik || { echo "❌ Project folder not found"; exit 1; }
 
+            echo "🔐 Making deploy.sh executable..."
+            chmod +x deploy.sh
+
             echo "▶️ Running deploy.sh"
             ./deploy.sh || { echo "❌ Deployment script failed"; exit 1; }
 

@@ -56,14 +56,7 @@ sudo find $APP_DIR -type d -exec chmod 755 {} \;
 echo "💡 Running health check..." | tee -a $LOG_FILE
 sleep 3
 
-echo "🔎 Checking response headers:"
-curl -i --max-time 10 http://localhost/login.php || echo "⚠️ curl headers failed"
-
-echo "🔎 Checking response body (first 30 lines):"
-curl -s --max-time 10 http://localhost/login.php | head -n 30 || echo "⚠️ curl body failed"
-
-echo "🔍 Evaluating <title> presence..."
-if curl -sf --max-time 10 http://localhost/login.php | grep -qi "<title>"; then
+if curl -sf --max-time 10 http://localhost/health.php; then
   echo "✅ Health check passed"
 else
   echo "❌ Health check failed! Rolling back..." | tee -a $LOG_FILE

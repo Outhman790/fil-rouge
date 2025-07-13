@@ -24,7 +24,7 @@ jobs:
 
       - name: 🚀 Deploy to EC2
         run: |
-          ssh -tt -i ~/.ssh/key.pem -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << EOF
+          ssh -t -i ~/.ssh/key.pem -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << EOF
             echo "✅ Connected to EC2"
 
             echo "🛠️ Adding project to Git safe.directory"

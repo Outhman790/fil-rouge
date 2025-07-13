@@ -54,7 +54,7 @@ sudo find $APP_DIR -type d -exec chmod 755 {} \;
 
 # Health check
 echo "💡 Running health check..." | tee -a $LOG_FILE
-curl -sf --max-time 10 http://localhost | grep -qi "<title>"
+curl -sf --max-time 10 http://localhost/login.php | grep -qi "<title>"
 if [ $? -ne 0 ]; then
   echo "❌ Health check failed! Rolling back..." | tee -a $LOG_FILE
   git reset --hard $PREV_COMMIT

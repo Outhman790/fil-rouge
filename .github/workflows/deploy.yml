@@ -33,8 +33,9 @@ jobs:
             cd /var/www/sandik || { echo "❌ Project folder not found"; exit 1; }
 
             echo "🔐 Making deploy.sh executable..."
-            echo "ℹ️ Current user: $(whoami):$(id -gn)"
-            sudo chown $USER:$USER deploy.sh
+            CURRENT_USER=$(whoami)
+            echo "ℹ️ Current user: $CURRENT_USER"
+            sudo chown $CURRENT_USER:$CURRENT_USER deploy.sh
             sudo chmod +x deploy.sh || { echo "❌ chmod failed"; exit 1; }
 
             echo "▶️ Running deploy.sh"

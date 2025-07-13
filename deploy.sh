@@ -51,7 +51,7 @@ curl -s --max-time 10 http://localhost | grep -q "<title>"
 if [ $? -ne 0 ]; then
   echo "❌ Health check failed! Rolling back..." | tee -a $LOG_FILE
   git reset --hard $PREV_COMMIT
-  sudo -u www-data composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader
+  sudo -u www-data composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader || { echo "❌ Composer failed"; exit 1; }
   echo "✅ Rolled back to previous commit: $PREV_COMMIT" | tee -a $LOG_FILE
   exit 1
 fi

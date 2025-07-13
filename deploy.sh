@@ -28,8 +28,8 @@ git fetch origin
 git reset --hard origin/$BRANCH
 
 # Ensure project is owned by www-data before Composer
-sudo chown -R www-data:www-data $APP_DIR
-
+echo "📦 Giving ownership to www-data"
+sudo chown -R www-data:www-data /var/www/sandik
 # Install PHP dependencies as www-data
 echo "📦 Installing Composer deps as www-data..." | tee -a $LOG_FILE
 sudo -u www-data composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader

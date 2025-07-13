@@ -57,8 +57,8 @@ echo "💡 Running health check..." | tee -a $LOG_FILE
 # Sleep briefly to give PHP/Nginx a moment to warm up
 sleep 3
 # Log the actual response for debug
-curl -i http://localhost/login.php | tee -a $LOG_FILE
-curl -sf --max-time 10 http://localhost/login.php | grep -qi "<title>"
+echo "🔎 Health check raw response:"
+curl -i http://localhost/login.phpcurl -sf --max-time 10 http://localhost/login.php | grep -qi "<title>"
 if [ $? -ne 0 ]; then
   echo "❌ Health check failed! Rolling back..." | tee -a $LOG_FILE
   git reset --hard $PREV_COMMIT

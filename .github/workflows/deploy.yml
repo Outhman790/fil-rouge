@@ -1,40 +1,43 @@
-name: 🚀 Deploy to EC2
+name: 🚀 Deploy Sandik to EC2
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: ⏬ Checkout repository
+      - name: 📥 Checkout repository
         uses: actions/checkout@v4
 
-      - name: 🔑 Set up SSH access
+      - name: 🔐 Write SSH key
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/key.pem
           chmod 600 ~/.ssh/key.pem
+
+      - name: 🌐 Add EC2 to known_hosts
+        run: |
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-      - name: 🚀 Connect to EC2 and run deploy.sh
+      - name: 🚀 Deploy to EC2
         run: |
-          ssh -tt -i ~/.ssh/key.pem -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+          ssh -tt -i ~/.ssh/key.pem -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << EOF
             echo "✅ Connected to EC2"
 
-            # Safely allow Git in CI context
+            echo "🛠️ Adding project to Git safe.directory"
             git config --global --add safe.directory /var/www/sandik
 
             cd /var/www/sandik || { echo "❌ Project folder not found"; exit 1; }
 
             echo "🔐 Making deploy.sh executable..."
-            chmod +x deploy.sh
+            sudo chown $USER:$USER deploy.sh
+            sudo chmod +x deploy.sh || { echo "❌ chmod failed"; exit 1; }
 
             echo "▶️ Running deploy.sh"
-            ./deploy.sh || { echo "❌ Deployment script failed"; exit 1; }
+            sudo ./deploy.sh || { echo "❌ Deployment script failed"; exit 1; }
 
             echo "✅ Deployment completed"
           EOF

@@ -16,7 +16,7 @@ jobs:
       - name: 🔑 Set up SSH access
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_PRIVATE_KEY }}" > ~/.ssh/key.pem
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/key.pem
           chmod 600 ~/.ssh/key.pem
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 

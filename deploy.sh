@@ -54,13 +54,20 @@ sudo find $APP_DIR -type d -exec chmod 755 {} \;
 
 # Health check
 echo "💡 Running health check..." | tee -a $LOG_FILE
-# Sleep briefly to give PHP/Nginx a moment to warm up
 sleep 3
-# Log the actual response for debug
-echo "🔎 Health check raw response:"
-curl -i http://localhost/login.phpcurl -sf --max-time 10 http://localhost/login.php | grep -qi "<title>"
-if [ $? -ne 0 ]; then
+
+echo "🔎 Checking response headers:"
+curl -i --max-time 10 http://localhost/login.php || echo "⚠️ curl headers failed"
+
+echo "🔎 Checking response body (first 30 lines):"
+curl -s --max-time 10 http://localhost/login.php | head -n 30 || echo "⚠️ curl body failed"
+
+echo "🔍 Evaluating <title> presence..."
+if curl -sf --max-time 10 http://localhost/login.php | grep -qi "<title>"; then
+  echo "✅ Health check passed"
+else
   echo "❌ Health check failed! Rolling back..." | tee -a $LOG_FILE
+
   git reset --hard $PREV_COMMIT
 
   echo "🧹 Resetting vendor directory after rollback..."

@@ -31,6 +31,9 @@ git reset --hard origin/$BRANCH
 echo "📦 Giving ownership to www-data"
 sudo chown -R www-data:www-data /var/www/sandik
 # Install PHP dependencies as www-data
+echo "🧹 Cleaning up vendor to reset permissions..."
+sudo rm -rf /var/www/sandik/vendor
+
 echo "📦 Installing Composer deps as www-data..." | tee -a $LOG_FILE
 sudo -u www-data composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader
 COMPOSER_STATUS=$?

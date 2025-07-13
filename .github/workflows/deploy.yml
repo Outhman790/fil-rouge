@@ -33,8 +33,7 @@ jobs:
             cd /var/www/sandik || { echo "❌ Project folder not found"; exit 1; }
 
             echo "🔐 Making deploy.sh executable..."
-            echo "ℹ️ Current user: $(whoami)"
-            sudo chown $(whoami):$(whoami) deploy.sh
+            sudo chown ubuntu:ubuntu deploy.sh
             sudo chmod +x deploy.sh || { echo "❌ chmod failed"; exit 1; }
 
             echo "▶️ Running deploy.sh"

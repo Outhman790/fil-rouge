@@ -17,7 +17,7 @@ else :
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>Login - SB Admin</title>
+        <title>Login - Obuildings Management</title>
         <link href="css/styles.css" rel="stylesheet" />
         <!-- Include jQuery -->
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -25,78 +25,76 @@ else :
         <!-- Include Bootstrap JavaScript -->
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link href="css/login-styles.css" rel="stylesheet" />
     </head>
 
-    <body class="bg-secondary">
-        <div id="layoutAuthentication">
-            <div id="layoutAuthentication_content">
-                <main>
-                    <div class="container">
-                        <div class="row justify-content-center">
-                            <div class="col-lg-5">
-                                <div class="card shadow-lg border-0 rounded-lg mt-5">
-                                    <div class="card-header">
-                                        <h3 class="text-center font-weight-light my-4">Login</h3>
-                                    </div>
-                                    <div class="card-body">
-                                        <form method="POST" action="includes/login.inc.php">
-                                            <div class="form-floating mb-3">
-                                                <input class="form-control" id="inputEmail" type="email" placeholder="name@example.com" name="login-email" />
-                                                <label for="inputEmail">Email address</label>
-                                            </div>
-                                            <div class="form-floating mb-3">
-                                                <input class="form-control" id="inputPassword" type="password" placeholder="Password" name="login-password" />
-                                                <label for="inputPassword">Password</label>
-                                            </div>
-                                            <div class="d-flex align-items-center justify-content-center mt-4 mb-0">
-                                                <button class="btn btn-primary" type="submit" name="login">
-                                                    Login
-                                                </button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </main>
-            </div>
-            <div id="layoutAuthentication_footer">
-                <footer class="py-4 bg-light mt-auto">
-                    <div class="container-fluid px-4">
-                        <div class="d-flex align-items-center justify-content-between small">
-                            <div class="text-muted">Copyright &copy; Obuildings 2023</div>
-                            <div>
-                                <a href="#">Privacy Policy</a>
-                                &middot;
-                                <a href="#">Terms &amp; Conditions</a>
-                            </div>
-                        </div>
-                    </div>
-                </footer>
-            </div>
+    <body>
+        <div class="floating-shapes">
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
         </div>
-        <!-- LOGIN MODAL RESPONSE-->
-        <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header bg-primary text-white">
-                        <h5 class="modal-title" id="errorModalLabel">Error Message</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true"><i class="fas fa-times"></i></span>
-                        </button>
 
-                    </div>
-                    <div class="modal-body">
-                        <p id="errorMessage"></p>
+        <div class="login-container">
+            <div class="login-card">
+                <div class="login-header">
+                    <h3><i class="fas fa-building me-2"></i>Obuildings</h3>
+                    <p class="subtitle">Management System</p>
+                </div>
+
+                <div class="login-body">
+                    <form method="POST" action="includes/login.inc.php">
+                        <div class="form-floating">
+                            <input class="form-control" id="inputEmail" type="email" placeholder="name@example.com" name="login-email" required />
+                            <label for="inputEmail">
+                                <i class="fas fa-envelope me-2"></i>Email Address
+                            </label>
+                        </div>
+
+                        <div class="form-floating">
+                            <input class="form-control" id="inputPassword" type="password" placeholder="Password" name="login-password" required />
+                            <label for="inputPassword">
+                                <i class="fas fa-lock me-2"></i>Password
+                            </label>
+                        </div>
+
+                        <button class="btn btn-login" type="submit" name="login">
+                            <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                        </button>
+                    </form>
+                </div>
+
+                <div class="login-footer">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="text-muted">© 2023 Obuildings</div>
+                        <div>
+                            <a href="#" class="me-3">Privacy</a>
+                            <a href="#">Terms</a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous">
-        </script>
+        <!-- LOGIN MODAL RESPONSE-->
+        <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header bg-gradient-primary text-white">
+                        <h5 class="modal-title" id="errorModalLabel">
+                            <i class="fas fa-exclamation-triangle me-2"></i>Error Message
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p id="errorMessage" class="mb-0"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
         <script src="js/scripts.js"></script>
     </body>
 

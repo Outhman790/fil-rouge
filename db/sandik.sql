@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 01, 2023 at 05:12 AM
+-- Generation Time: Jul 14, 2025 at 05:44 AM
 -- Server version: 10.4.27-MariaDB
--- PHP Version: 8.2.0
+-- PHP Version: 8.1.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -186,10 +186,12 @@ INSERT INTO `residents` (`resident_id`, `fName`, `lName`, `email`, `password`, `
 (37, 'Forrest', 'Case', 'gujo@mailinator.com', '$2y$10$kdB9XITtppRixoHvmxvYQeAn5E.BLdi7VYgSKk0FZYBMYsyV3hROa', 'Previous resident', 'hovuq', '2023-03-19 15:22:44'),
 (38, 'Malcolm', 'Lambert', 'solipeg@mailinator.com', '$2y$10$C.i0Gd8JrVIBgj96TYVEiOV84fxFpN7l7fj2wD6UhkQEnDahVqgBe', 'Resident', 'jytesisom', '2023-03-14 20:14:12'),
 (39, 'Hannah', 'Montana', 'saf@asf.asf', '$2y$10$IBKV2hJ8cskkL7jYdk7SCurSHRvgb6jMcBxOVAY14aULWOf.WEy.a', 'Resident', 'asf9', '2023-05-19 14:48:40'),
-(40, 'Outhman', 'Moumou', 'tangerino2011@gmail.com', '$2y$10$Pw2PcrcjTCP1S0Jj6baZK.LfQYL5tNq7YrM.yG6INBi8B5rEB0mbS', 'Admin', 'Outhman790', '2022-03-15 07:12:16'),
+(40, 'Outhman', 'Moumou', 'tangerino2011@gmail.com', '$2y$10$K4zi6XZlPY7kTYiROL/etOVAt2gtw4qD6uvwwSsawr9eK0DVWTDVm', 'Admin', 'Outhman790', '2025-07-14 02:51:07'),
 (41, 'Outhman', 'MOUMOU', 'afaf@afa.afa', '$2y$10$nMgZ4ZPMGD0h60OAin/1jOrkP60QYJh4yc39zZHmUg/wGd..eXoPW', 'Resident', 'out790', '2023-06-21 14:03:50'),
 (42, 'Amine', 'Almchattab', 'afasf@faf.asf', '$2y$10$cWZqbaIOfmT/Xy0wpn7sA./oHDMcc76kPSoeaitHGEPDXLxb6Zybq', 'Previous resident', 'asf94', '2023-06-21 14:03:28'),
-(43, 'Camden', 'Chavez', 'gegasuvy@mailinator.com', '$2y$10$rL.ejoqUUmp.Y8yRO/vsiuLO28vmWaYsldNFyL4YNrNAo5pX4lpWe', 'Resident', 'munuzyfyq', '2023-06-21 14:04:40');
+(43, 'Camden', 'Chavez', 'gegasuvy@mailinator.com', '$2y$10$rL.ejoqUUmp.Y8yRO/vsiuLO28vmWaYsldNFyL4YNrNAo5pX4lpWe', 'Resident', 'munuzyfyq', '2023-06-21 14:04:40'),
+(44, 'Meagan', 'Hermann', 'fakedata12817@gmail.com', '$2y$10$diOcfq9BmzofqF2zz0vRQed0fczQphkNhp8pK05x6VKDja5gVh6WW', 'Resident', 'Fidel17', '2025-07-11 19:09:35'),
+(45, 'Pete', 'Ratke', 'fakedata17319@gmail.com', '$2y$10$CANGvDWlsa2CezM4Oh5EROtlHKL573He1PKUUOy/B81d/guQk4IRG', 'Resident', 'Ryan234', '2025-07-11 19:10:11');
 
 --
 -- Indexes for dumped tables
@@ -275,7 +277,7 @@ ALTER TABLE `purchases`
 -- AUTO_INCREMENT for table `residents`
 --
 ALTER TABLE `residents`
-  MODIFY `resident_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
+  MODIFY `resident_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
 
 --
 -- Constraints for dumped tables

@@ -3,14 +3,13 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 14, 2025 at 05:44 AM
+-- Generation Time: Jul 01, 2023 at 05:12 AM
 -- Server version: 10.4.27-MariaDB
--- PHP Version: 8.1.12
+-- PHP Version: 8.2.0
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
-
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -52,25 +51,45 @@ INSERT INTO `announcements` (`announcement_id`, `title`, `description`, `image`,
 
 CREATE TABLE `comments` (
   `comment_id` int(11) NOT NULL,
-  `announcement_id` int(11) NOT NULL,
-  `resident_id` int(11) NOT NULL,
-  `comment_text` varchar(255) DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `announcement_id` int(11) DEFAULT NULL,
+  `resident_id` int(11) DEFAULT NULL,
+  `comment` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `comments`
 --
 
-INSERT INTO `comments` (`comment_id`, `announcement_id`, `resident_id`, `comment_text`, `created_at`, `updated_at`) VALUES
-(66, 1, 8, 'Good news ', '2023-06-17 21:16:15', '2023-06-17 20:16:15'),
-(67, 1, 33, 'Glad to hear that ', '2023-06-17 21:16:35', '2023-06-17 20:16:35'),
-(69, 9, 8, 'this is a test comment', '2023-06-17 22:26:33', '2023-06-17 21:26:33'),
-(79, 9, 35, 'another comment for another test ', '2023-06-18 12:40:51', '2023-06-18 11:40:51'),
-(80, 9, 33, 'another test ', '2023-06-19 15:10:25', '2023-06-19 14:10:25'),
-(81, 9, 8, 'some lorem ipsum ', '2023-06-21 14:46:49', '2023-06-21 13:46:49'),
-(82, 9, 8, 'tedst test ettst ', '2023-06-21 14:46:59', '2023-06-21 13:46:59');
+INSERT INTO `comments` (`comment_id`, `announcement_id`, `resident_id`, `comment`, `created_at`) VALUES
+(1, 1, 8, 'I will be there', '2023-06-15 12:02:50'),
+(2, 1, 31, 'I will attend', '2023-06-15 12:03:50'),
+(3, 1, 32, 'I will be there', '2023-06-15 12:04:50'),
+(4, 1, 33, 'I will attend', '2023-06-15 12:05:50'),
+(5, 1, 34, 'I will be there', '2023-06-15 12:06:50'),
+(6, 1, 35, 'I will attend', '2023-06-15 12:07:50'),
+(7, 1, 38, 'I will be there', '2023-06-15 12:08:50'),
+(8, 1, 39, 'I will attend', '2023-06-15 12:09:50'),
+(9, 1, 40, 'I will be there', '2023-06-15 12:10:50'),
+(10, 1, 41, 'I will attend', '2023-06-15 12:11:50'),
+(11, 1, 42, 'I will be there', '2023-06-15 12:12:50'),
+(12, 1, 43, 'I will attend', '2023-06-15 12:13:50'),
+(13, 1, 44, 'I will be there', '2023-06-15 12:14:50'),
+(14, 1, 45, 'I will attend', '2023-06-15 12:15:50'),
+(15, 9, 8, 'I will be there', '2023-06-17 21:26:58'),
+(16, 9, 31, 'I will attend', '2023-06-17 21:27:58'),
+(17, 9, 32, 'I will be there', '2023-06-17 21:28:58'),
+(18, 9, 33, 'I will attend', '2023-06-17 21:29:58'),
+(19, 9, 34, 'I will be there', '2023-06-17 21:30:58'),
+(20, 9, 35, 'I will attend', '2023-06-17 21:31:58'),
+(21, 9, 38, 'I will be there', '2023-06-17 21:32:58'),
+(22, 9, 39, 'I will attend', '2023-06-17 21:33:58'),
+(23, 9, 40, 'I will be there', '2023-06-17 21:34:58'),
+(24, 9, 41, 'I will attend', '2023-06-17 21:35:58'),
+(25, 9, 42, 'I will be there', '2023-06-17 21:36:58'),
+(26, 9, 43, 'I will attend', '2023-06-17 21:37:58'),
+(27, 9, 44, 'I will be there', '2023-06-17 21:38:58'),
+(28, 9, 45, 'I will attend', '2023-06-17 21:39:58');
 
 -- --------------------------------------------------------
 
@@ -80,16 +99,44 @@ INSERT INTO `comments` (`comment_id`, `announcement_id`, `resident_id`, `comment
 
 CREATE TABLE `likes` (
   `like_id` int(11) NOT NULL,
-  `announcement_id` int(11) NOT NULL,
-  `resident_id` int(11) NOT NULL
+  `announcement_id` int(11) DEFAULT NULL,
+  `resident_id` int(11) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `likes`
 --
 
-INSERT INTO `likes` (`like_id`, `announcement_id`, `resident_id`) VALUES
-(80, 9, 8);
+INSERT INTO `likes` (`like_id`, `announcement_id`, `resident_id`, `created_at`) VALUES
+(1, 1, 8, '2023-06-15 12:02:50'),
+(2, 1, 31, '2023-06-15 12:03:50'),
+(3, 1, 32, '2023-06-15 12:04:50'),
+(4, 1, 33, '2023-06-15 12:05:50'),
+(5, 1, 34, '2023-06-15 12:06:50'),
+(6, 1, 35, '2023-06-15 12:07:50'),
+(7, 1, 38, '2023-06-15 12:08:50'),
+(8, 1, 39, '2023-06-15 12:09:50'),
+(9, 1, 40, '2023-06-15 12:10:50'),
+(10, 1, 41, '2023-06-15 12:11:50'),
+(11, 1, 42, '2023-06-15 12:12:50'),
+(12, 1, 43, '2023-06-15 12:13:50'),
+(13, 1, 44, '2023-06-15 12:14:50'),
+(14, 1, 45, '2023-06-15 12:15:50'),
+(15, 9, 8, '2023-06-17 21:26:58'),
+(16, 9, 31, '2023-06-17 21:27:58'),
+(17, 9, 32, '2023-06-17 21:28:58'),
+(18, 9, 33, '2023-06-17 21:29:58'),
+(19, 9, 34, '2023-06-17 21:30:58'),
+(20, 9, 35, '2023-06-17 21:31:58'),
+(21, 9, 38, '2023-06-17 21:32:58'),
+(22, 9, 39, '2023-06-17 21:33:58'),
+(23, 9, 40, '2023-06-17 21:34:58'),
+(24, 9, 41, '2023-06-17 21:35:58'),
+(25, 9, 42, '2023-06-17 21:36:58'),
+(26, 9, 43, '2023-06-17 21:37:58'),
+(27, 9, 44, '2023-06-17 21:38:58'),
+(28, 9, 45, '2023-06-17 21:39:58');
 
 -- --------------------------------------------------------
 
@@ -102,7 +149,7 @@ CREATE TABLE `payments` (
   `resident_id` int(11) DEFAULT NULL,
   `payment_month` int(11) DEFAULT NULL,
   `payment_year` int(11) DEFAULT NULL,
-  `transaction_id` varchar(255) NOT NULL
+  `transaction_id` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -305,5 +352,5 @@ ALTER TABLE `payments`
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */; 

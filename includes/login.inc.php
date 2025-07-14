@@ -12,7 +12,7 @@ if (isset($_POST['login'])) {
     // Instantiate signup-controller class
     include('../classes/db.class.php');
     include('../classes/login.class.php');
-    include('../classes/logincontr.class.php');
+    include('../classes/loginContr.class.php');
     $login = new LoginController($email, $password);
 
     // running error handler and user signup

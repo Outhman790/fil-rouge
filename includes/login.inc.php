@@ -1,4 +1,8 @@
 <?php
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 if (isset($_POST['login'])) {
     // Getting the data
     $email = $_POST['login-email'];

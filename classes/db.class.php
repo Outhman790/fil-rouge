@@ -1,12 +1,24 @@
 <?php
 
+// Include database configuration
+require_once __DIR__ . '/db-config.php';
+
 class DB
 {
     protected $conn;
-    protected $host = 'localhost';
-    protected $dbname = 'sandik';
-    protected $username = 'outhman790';
-    protected $password = 'outhman790..!!';
+    protected $host;
+    protected $dbname;
+    protected $username;
+    protected $password;
+
+    public function __construct()
+    {
+        global $dbConfig;
+        $this->host = $dbConfig['host'];
+        $this->dbname = $dbConfig['dbname'];
+        $this->username = $dbConfig['username'];
+        $this->password = $dbConfig['password'];
+    }
 
 
     public function connect()

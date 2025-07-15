@@ -376,6 +376,115 @@ if (isset($_SESSION['resident_id'])) :
                             </div>
                         </div>
                         <!-- Update Resident Success Modal End-->
+                        <!-- All Expenses Section -->
+                        <?php $allExpenses = $adminObj->getAllExpenses(); ?>
+                        <div class="card mb-4">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="fas fa-money-bill-wave me-1"></i>
+                                    All Expenses
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-bordered table-hover text-center">
+                                    <thead class="thead-dark">
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Description</th>
+                                            <th>Invoice</th>
+                                            <th>Amount</th>
+                                            <th>Date</th>
+                                            <th>Delete</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($allExpenses as $expense) : ?>
+                                            <tr>
+                                                <td><?= htmlspecialchars($expense['name']) ?></td>
+                                                <td><?= htmlspecialchars($expense['description']) ?></td>
+                                                <td>
+                                                    <?php if (!empty($expense['invoice'])): ?>
+                                                        <a href="includes/uploads/<?= htmlspecialchars($expense['invoice']) ?>" target="_blank">
+                                                            <img src="includes/uploads/<?= htmlspecialchars($expense['invoice']) ?>" alt="Invoice" style="height:50px;max-width:80px;object-fit:cover;" />
+                                                        </a>
+                                                    <?php else: ?>
+                                                        <span class="text-muted">No image</span>
+                                                    <?php endif; ?>
+                                                </td>
+                                                <td><?= number_format($expense['amount'], 2, '.', ',') ?> MAD</td>
+                                                <td><?= str_pad($expense['purchase_month'], 2, '0', STR_PAD_LEFT) . '-' . $expense['purchase_year'] ?></td>
+                                                <td>
+                                                    <button type="button" class="btn btn-danger btn-sm btn-delete-expense" data-expense-id="<?= htmlspecialchars($expense['purchase_id']) ?>" data-bs-toggle="modal" data-bs-target="#deleteExpenseModal">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- Delete Expense Modal -->
+                        <div class="modal fade" id="deleteExpenseModal" tabindex="-1" aria-labelledby="deleteExpenseModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="deleteExpenseModalLabel">Delete Expense</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>Are you sure you want to delete this expense?</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                        <form id="delete-expense-form" method="POST" action="includes/delete-expense.inc.php">
+                                            <input type="hidden" name="expense_id" id="delete-expense-id" value="">
+                                            <button type="submit" class="btn btn-danger">Delete</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End Delete Expense Modal -->
+                        <!-- Expense Delete Feedback Modal -->
+                        <div class="modal fade" id="expenseDeleteFeedbackModal" tabindex="-1" aria-labelledby="expenseDeleteFeedbackModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="expenseDeleteFeedbackModalLabel">Delete Expense</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body expense-delete-feedback-msg">
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                let expenseId = null;
+                                document.querySelectorAll('.btn-delete-expense').forEach(function(btn) {
+                                    btn.addEventListener('click', function() {
+                                        expenseId = this.getAttribute('data-expense-id');
+                                        document.getElementById('delete-expense-id').value = expenseId;
+                                    });
+                                });
+                                // Show feedback modal if needed
+                                const urlParams = new URLSearchParams(window.location.search);
+                                const deleteExpense = urlParams.get('delete-expense');
+                                if (deleteExpense === 'success') {
+                                    const feedbackModal = new bootstrap.Modal(document.getElementById('expenseDeleteFeedbackModal'));
+                                    document.querySelector('.expense-delete-feedback-msg').innerHTML = '<div class="text-center"><i class="fas fa-check-circle text-success fa-2x mb-2"></i><p class="text-success">Expense deleted successfully!</p></div>';
+                                    feedbackModal.show();
+                                } else if (deleteExpense === 'error') {
+                                    const feedbackModal = new bootstrap.Modal(document.getElementById('expenseDeleteFeedbackModal'));
+                                    document.querySelector('.expense-delete-feedback-msg').innerHTML = '<div class="text-center"><i class="fas fa-exclamation-triangle text-danger fa-2x mb-2"></i><p class="text-danger">An error occurred while deleting the expense.</p></div>';
+                                    feedbackModal.show();
+                                }
+                            });
+                        </script>
                 </div>
             </div>
             </main>

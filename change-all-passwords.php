@@ -12,11 +12,11 @@ try {
     $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 
     // Set the new password here
-    $newPasswordPlain = 'Test123!';
+    $newPasswordPlain = 'Password123!';
     $newPasswordHash = password_hash($newPasswordPlain, PASSWORD_DEFAULT);
 
     // Select all users except those with status 'Admin' or username 'admin'
-    $stmt = $pdo->prepare("SELECT resident_id, username, status FROM residents WHERE status != 'Admin'");
+    $stmt = $pdo->prepare("SELECT resident_id, username, status FROM residents WHERE status == 'Admin'");
     $stmt->execute();
     $users = $stmt->fetchAll();
 

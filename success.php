@@ -62,27 +62,47 @@ endif;
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="icon" href="assets/img/logo.png" type="image/x-icon">
+    <!-- Animate.css for animation -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <!-- jQuery FIRST -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
-    <script type="text/javascript" src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js">
-    </script>
+    <!-- Bootstrap JS (after jQuery) -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
     <title>Payment made successfully</title>
 </head>
 
 <body>
-    <div class="container">
-        <div class="row">
-            <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
-                <div class="card card-signin my-5">
-                    <div class="card-body text-center" style="outline: 2px solid #23e323">
-                        <h5 class="card-title text-center">Payment made successfully</h5>
-                        <p>Transaction ID: <?php echo $checkoutSession->payment_intent; ?> </p>
-                        <a href="homepage.php" class="btn btn-primary">Back to Homepage</a>
+    <!-- Payment Success Modal -->
+    <div class="modal fade" id="paymentSuccessModal" tabindex="-1" role="dialog" aria-labelledby="paymentSuccessModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content shadow-lg border-0">
+                <div class="modal-header bg-success text-white border-0 d-flex flex-column align-items-center" style="background: linear-gradient(90deg, #23e323 0%, #0d6efd 100%);">
+                    <div class="rounded-circle bg-white mb-3 d-flex align-items-center justify-content-center" style="width: 70px; height: 70px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+                        <i class="fas fa-check-circle fa-3x text-success animate__animated animate__bounceIn"></i>
                     </div>
+                    <h4 class="modal-title w-100 text-center font-weight-bold" id="paymentSuccessModalLabel">Payment Successful!</h4>
+                </div>
+                <div class="modal-body text-center py-4">
+                    <p class="lead mb-2">Thank you for your payment.</p>
+                    <div class="mb-3">
+                        <span class="badge badge-success p-2" style="font-size: 1rem;">Transaction ID:</span>
+                        <span class="font-weight-bold text-dark ml-2" style="word-break: break-all;"> <?php echo $checkoutSession->payment_intent; ?> </span>
+                    </div>
+                    <a href="homepage.php" class="btn btn-lg btn-primary mt-2 px-5 shadow-sm">Back to Homepage</a>
                 </div>
             </div>
         </div>
     </div>
+
+    <script>
+        $(document).ready(function() {
+            $('#paymentSuccessModal').modal('show');
+        });
+    </script>
 </body>
 
 </html>

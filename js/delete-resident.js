@@ -16,5 +16,25 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
+// Check if the URL contains the "delete-resident" query parameter
 const urlParams = new URLSearchParams(window.location.search);
 const deleteResident = urlParams.get("delete-resident");
+
+// If the "delete-resident" query parameter is present, show the feedback modal
+if (deleteResident === "success") {
+  const feedbackModal = new bootstrap.Modal(
+    document.getElementById("deleteFeedbackModal")
+  );
+  const feedbackMsg = document.querySelector(".modal-body.delete-feedback-msg");
+  feedbackMsg.innerHTML =
+    '<div class="text-center"><i class="fas fa-check-circle text-success fa-2x mb-2"></i><p class="text-success">Resident deleted successfully!</p></div>';
+  feedbackModal.show();
+} else if (deleteResident === "error") {
+  const feedbackModal = new bootstrap.Modal(
+    document.getElementById("deleteFeedbackModal")
+  );
+  const feedbackMsg = document.querySelector(".modal-body.delete-feedback-msg");
+  feedbackMsg.innerHTML =
+    '<div class="text-center"><i class="fas fa-exclamation-triangle text-danger fa-2x mb-2"></i><p class="text-danger">An error occurred while deleting the resident.</p></div>';
+  feedbackModal.show();
+}

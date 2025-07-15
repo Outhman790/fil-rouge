@@ -9,14 +9,25 @@ form.addEventListener("submit", (e) => {
   // Create a new FormData object
   const formData = new FormData(form);
 
-  // Send an AJAX request using fetch
-  fetch("includes/add-expense.inc.php", {
+  // Dynamically build the correct path to includes/add-expense.inc.php
+  const basePath = window.location.pathname.substring(
+    0,
+    window.location.pathname.lastIndexOf("/")
+  );
+  const fetchUrl = basePath + "/includes/add-expense.inc.php";
+  console.log("Fetching from:", fetchUrl);
+
+  fetch(fetchUrl, {
     method: "POST",
     body: formData,
   })
-    .then((response) => response.json())
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
     .then((data) => {
-      // Handle the response from the server
       if (data.success) {
         showModal(data.success);
         form.reset();
@@ -25,8 +36,8 @@ form.addEventListener("submit", (e) => {
       }
     })
     .catch((error) => {
-      console.error("Error:", error);
-      alert("An error occurred. Please try again.");
+      console.error("Fetch Error:", error);
+      alert("An error occurred. Please try again. Check console for details.");
     });
 });
 // Modal function

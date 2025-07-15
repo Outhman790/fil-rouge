@@ -10,7 +10,7 @@ form.addEventListener("submit", (e) => {
   const formData = new FormData(form);
 
   // Send an AJAX request using fetch
-  fetch("../sandik pfe/includes/add-expense.inc.php", {
+  fetch("includes/add-expense.inc.php", {
     method: "POST",
     body: formData,
   })

@@ -404,7 +404,7 @@ if (isset($_SESSION['resident_id'])) :
                                                 <td><?= htmlspecialchars($expense['description']) ?></td>
                                                 <td>
                                                     <?php if (!empty($expense['invoice'])): ?>
-                                                        <a href="includes/uploads/<?= htmlspecialchars($expense['invoice']) ?>" target="_blank">
+                                                        <a href="#" class="invoice-image-link" data-img-src="includes/uploads/<?= htmlspecialchars($expense['invoice']) ?>">
                                                             <img src="includes/uploads/<?= htmlspecialchars($expense['invoice']) ?>" alt="Invoice" style="height:50px;max-width:80px;object-fit:cover;" />
                                                         </a>
                                                     <?php else: ?>
@@ -422,6 +422,20 @@ if (isset($_SESSION['resident_id'])) :
                                         <?php endforeach; ?>
                                     </tbody>
                                 </table>
+                            </div>
+                        </div>
+                        <!-- Add this modal after the expenses table -->
+                        <div class="modal fade" id="invoiceImageModal" tabindex="-1" aria-labelledby="invoiceImageModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="invoiceImageModalLabel">Invoice Image</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body text-center">
+                                        <img id="invoiceImagePreview" src="" alt="Invoice Image" class="img-fluid rounded shadow" style="max-height:70vh;" />
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <!-- Delete Expense Modal -->
@@ -483,6 +497,16 @@ if (isset($_SESSION['resident_id'])) :
                                     document.querySelector('.expense-delete-feedback-msg').innerHTML = '<div class="text-center"><i class="fas fa-exclamation-triangle text-danger fa-2x mb-2"></i><p class="text-danger">An error occurred while deleting the expense.</p></div>';
                                     feedbackModal.show();
                                 }
+                                // Invoice image modal logic
+                                document.querySelectorAll('.invoice-image-link').forEach(function(link) {
+                                    link.addEventListener('click', function(e) {
+                                        e.preventDefault();
+                                        var imgSrc = this.getAttribute('data-img-src');
+                                        document.getElementById('invoiceImagePreview').src = imgSrc;
+                                        var imgModal = new bootstrap.Modal(document.getElementById('invoiceImageModal'));
+                                        imgModal.show();
+                                    });
+                                });
                             });
                         </script>
                 </div>

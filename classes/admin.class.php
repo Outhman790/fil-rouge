@@ -165,4 +165,29 @@ class Admin extends DB
             return false;
         }
     }
+
+    public function getAllExpenses()
+    {
+        try {
+            $query = "SELECT * FROM purchases ORDER BY purchase_year DESC, purchase_month DESC";
+            $statement = $this->connect()->prepare($query);
+            $statement->execute();
+            $expenses = $statement->fetchAll(PDO::FETCH_ASSOC);
+            return $expenses;
+        } catch (PDOException $e) {
+            die("Query failed: " . $e->getMessage());
+        }
+    }
+
+    public function deleteExpense($purchase_id)
+    {
+        try {
+            $query = "DELETE FROM purchases WHERE purchase_id = :purchase_id";
+            $stmt = $this->connect()->prepare($query);
+            $stmt->bindParam(':purchase_id', $purchase_id, PDO::PARAM_INT);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
 }

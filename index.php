@@ -203,7 +203,7 @@ if (isset($_SESSION['resident_id'])) :
                                                     </td>
                                                     <td>
                                                         <div class="d-flex justify-content-center">
-                                                            <button type="button" class="btn btn-danger btn-sm btn-icon mr-2" data-bs-toggle="modal" data-bs-target="#deleteModal" data-resident-id="<?php echo $resident['resident_id']; ?>">
+                                                            <button type="button" class="btn btn-danger btn-sm btn-icon me-2" data-bs-toggle="modal" data-bs-target="#deleteModal" data-resident-id="<?php echo $resident['resident_id']; ?>">
                                                                 <i class="fas fa-trash"></i>
                                                             </button>
                                                             <button class="btn btn-success btn-sm btn-icon update-btn-resident" data-bs-toggle="modal" data-bs-target="#updateModal" data-resident-id="<?php echo $resident['resident_id']; ?>"><i class="fas fa-wrench"></i></button>
@@ -217,14 +217,12 @@ if (isset($_SESSION['resident_id'])) :
                             </div>
                         </div>
                         <!-- Add Resident Modal -->
-                        <div class="modal fade" id="addResidentModal" tabindex="-1" role="dialog" aria-labelledby="addResidentModalLabel" aria-hidden="true">
-                            <div class="modal-dialog" role="document">
+                        <div class="modal fade" id="addResidentModal" tabindex="-1" aria-labelledby="addResidentModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="addResidentModalLabel">Add Resident</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <form id="add-resident-form">
                                         <div class="modal-body">
@@ -255,7 +253,7 @@ if (isset($_SESSION['resident_id'])) :
                                             </div>
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                             <button name="add-resident" type="submit" class="btn btn-success" id="addResidentBtn">Add</button>
                                         </div>
                                     </form>
@@ -280,20 +278,18 @@ if (isset($_SESSION['resident_id'])) :
                         </div>
                         <!-- End of Success or Error modal (add) -->
                         <!-- Delete Modal -->
-                        <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
-                            <div class="modal-dialog" role="document">
+                        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="deleteModalLabel">Delete Resident</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
                                         <p>Are you sure you want to delete this resident?</p>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                                         <button type="button" class="btn btn-danger"> <a class="text-decoration-none text-reset">Delete</a></button>
                                     </div>
                                 </div>
@@ -301,33 +297,29 @@ if (isset($_SESSION['resident_id'])) :
                         </div>
                         <!-- Delete Modal end -->
                         <!-- Delete Feedback Modal -->
-                        <div class="modal fade" id="deleteFeedbackModal" tabindex="-1" role="dialog" aria-labelledby="deleteFeedbackModalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal fade" id="deleteFeedbackModal" tabindex="-1" aria-labelledby="deleteFeedbackModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="deleteFeedbackModalLabel">Delete Result</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body delete-feedback-msg">
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <!-- Delete Feedback Modal End -->
                         <!-- Update Resident Modal -->
-                        <div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="updateResidentModalLabel" aria-hidden="true">
-                            <div class="modal-dialog" role="document">
+                        <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateResidentModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="addResidentModalLabel">Update Resident</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <form id="add-resident-form" method="POST" action="includes/update-resident.inc.php">
                                         <input type="hidden" name="resident_id" id="residentIdInput">
@@ -359,7 +351,7 @@ if (isset($_SESSION['resident_id'])) :
                                             </div>
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                             <button name="update-resident" type="submit" class="btn btn-success" id="updateResidentBtn">Update</button>
                                         </div>
                                     </form>
@@ -368,19 +360,17 @@ if (isset($_SESSION['resident_id'])) :
                         </div>
                         <!-- Update Resident Modal End-->
                         <!-- Update Resident Success Modal -->
-                        <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
-                            <div class="modal-dialog" role="document">
+                        <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="successModalLabel">Success</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body mb-resident-update-msg">
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="close-btn btn btn-secondary" data-dismiss="modal">Close</button>
+                                        <button type="button" class="close-btn btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                     </div>
                                 </div>
                             </div>

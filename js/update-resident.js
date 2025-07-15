@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", function () {
 // Close the Modal by clicking on the X mark or close button
 $(document).ready(function () {
   // Add click event handler for the close button and close-btn
-  $("#successModal .close, #successModal .close-btn").click(function () {
+  $("#successModal .btn-close, #successModal .close-btn").click(function () {
     $("#successModal").modal("hide");
   });
 });

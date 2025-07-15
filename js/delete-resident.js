@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   document.addEventListener("click", function (event) {
     let deleteButton = event.target.closest(
-      ".btn.btn-danger.btn-sm.btn-icon.mr-2"
+      ".btn.btn-danger.btn-sm.btn-icon.me-2"
     );
     if (deleteButton) {
       let residentId = deleteButton.getAttribute("data-resident-id");

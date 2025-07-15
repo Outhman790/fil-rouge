@@ -2,8 +2,12 @@
 session_start();
 require_once "StripeHelper.class.php";
 require_once "payments.class.php";
-// APP url/base url
-$appUrl = "http://localhost/sandik%20pfe/";
+// Dynamically determine base URL
+if (isset($_SERVER['HTTP_HOST']) && strpos($_SERVER['HTTP_HOST'], 'localhost') !== false) {
+    $appUrl = "http://localhost/sandik/";
+} else {
+    $appUrl = "http://35.180.140.169/";
+}
 $productPrice = 300;
 $stripeHelper = new StripeHelper();
 $stripe = $stripeHelper->stripeClient;

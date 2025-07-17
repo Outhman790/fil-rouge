@@ -283,6 +283,90 @@ body::before {
   font-size: 1.1rem;
 }
 
+.modal-content#errorModal {
+  border-radius: 18px;
+  border: none;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(16px) saturate(180%);
+  overflow: hidden;
+  animation: modalPopIn 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.modal-header.bg-gradient-primary.text-white {
+  background: var(--gradient-primary);
+  color: #fff;
+  border-radius: 18px 18px 0 0;
+  border-bottom: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.5rem 2rem 1rem 2rem;
+}
+
+#errorModal .modal-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+#errorModal .fa-exclamation-triangle {
+  color: var(--primary-color);
+  font-size: 1.5rem;
+  margin-right: 0.5rem;
+  animation: shake 0.7s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+#errorModal .modal-body {
+  padding: 2rem 2rem 1.5rem 2rem;
+  color: var(--primary-dark);
+  font-size: 1.1rem;
+  text-align: center;
+}
+
+#errorModal .btn-close {
+  filter: invert(1);
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+#errorModal .btn-close:hover {
+  opacity: 1;
+}
+
+@keyframes modalPopIn {
+  0% {
+    transform: scale(0.85) translateY(40px);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes shake {
+  10%,
+  90% {
+    transform: translateX(-1px);
+  }
+  20%,
+  80% {
+    transform: translateX(2px);
+  }
+  30%,
+  50%,
+  70% {
+    transform: translateX(-4px);
+  }
+  40%,
+  60% {
+    transform: translateX(4px);
+  }
+}
+
 @media (max-width: 576px) {
   .login-card {
     margin: 1rem;

@@ -80,12 +80,12 @@ else :
         <!-- LOGIN MODAL RESPONSE-->
         <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
+                <div class="modal-content" id="errorModal">
                     <div class="modal-header bg-gradient-primary text-white">
                         <h5 class="modal-title" id="errorModalLabel">
                             <i class="fas fa-exclamation-triangle me-2"></i>Error Message
                         </h5>
-                        <button type="button" class="btn-close btn-close-white" data-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <p id="errorMessage" class="mb-0"></p>

@@ -23,45 +23,87 @@ $countPayments = $paymentObj->countPaymentsResident($_SESSION['resident_id']);
 $latestPaymentObj = new User();
 $latestPayment = ($countPayments == 0) ? null : $latestPaymentObj->getLatestPayment($_SESSION['resident_id']);
 
-// Calculate unpaid months and get the next payment month
-$unpaidMonths = calculateUnpaidMonths($_SESSION['resident_id'], $joinedIn, $latestPayment);
-$nextPaymentMonth = getNextPaymentMonth($unpaidMonths);
+// Get payment info from session
+$paymentInfo = $_SESSION['payment_info'] ?? [];
+$payAll = $paymentInfo['pay_all'] ?? false;
+$unpaidMonths = $paymentInfo['unpaid_months'] ?? [];
 
-if ($nextPaymentMonth !== null) {
-    // Determine the year for this payment
+// Calculate unpaid months and get the next payment month
+$currentUnpaidMonths = calculateUnpaidMonths($_SESSION['resident_id'], $joinedIn, $latestPayment);
+$nextPaymentMonth = getNextPaymentMonth($currentUnpaidMonths);
+
+if (!empty($currentUnpaidMonths)) {
+    $paymentsInsert = new Payments();
     $currentYear = (int)date('Y');
     $currentMonth = (int)date('n');
     
-    // If paying for a month that's already passed this year, or future months, use current year
-    // If paying for months from previous years, we need to determine the correct year
-    $paymentYear = $currentYear;
-    
-    // If the next payment month is greater than current month, it could be from previous year
-    if ($latestPayment && $nextPaymentMonth > $currentMonth) {
-        // Check if this month should be from previous year
-        $lastPaidYear = (int)$latestPayment['payment_year'];
-        if ($lastPaidYear < $currentYear) {
-            $paymentYear = $lastPaidYear;
+    if ($payAll && !empty($unpaidMonths)) {
+        // Handle bulk payment - pay all unpaid months
+        $successCount = 0;
+        foreach ($unpaidMonths as $index => $monthData) {
+            // Extract month and year from the unpaid months data
+            if (is_array($monthData)) {
+                $month = $monthData['month'];
+                $paymentYear = $monthData['year'];
+            } else {
+                // Fallback: if unpaidMonths contains just month numbers, use current year logic
+                $month = $monthData;
+                $paymentYear = $currentYear;
+            }
+            
+            // Create unique transaction ID for each month to avoid duplicates
+            $uniqueTransactionId = $checkoutSession->payment_intent . '_' . $month . '_' . $paymentYear . '_' . $index;
+            
+            // Add each payment
+            $success = $paymentsInsert->addPayment($month, $paymentYear, $uniqueTransactionId, $_SESSION['resident_id']);
+            if ($success) {
+                $successCount++;
+            }
         }
+        
+        // Debug info for bulk payment
+        $debugInfo = [
+            'payment_type' => 'bulk',
+            'months_paid' => $unpaidMonths,
+            'successful_payments' => $successCount,
+            'total_amount' => $paymentInfo['amount'] ?? 0,
+            'transaction_id' => $checkoutSession->payment_intent
+        ];
+        echo "<script>console.log('Bulk Payment Processing:', " . json_encode($debugInfo) . ");</script>";
+        
+    } else {
+        // Handle single payment
+        $paymentYear = $currentYear;
+        
+        // If the next payment month is greater than current month, it could be from previous year
+        if ($latestPayment && $nextPaymentMonth > $currentMonth) {
+            $lastPaidYear = (int)$latestPayment['payment_year'];
+            if ($lastPaidYear < $currentYear) {
+                $paymentYear = $lastPaidYear;
+            }
+        }
+        
+        // For new users, if paying for a future month in registration year
+        if (!$latestPayment && $nextPaymentMonth > $currentMonth && $joinedIn['year'] < $currentYear) {
+            $paymentYear = $joinedIn['year'];
+        }
+        
+        // Add the payment
+        $success = $paymentsInsert->addPayment($nextPaymentMonth, $paymentYear, $checkoutSession->payment_intent, $_SESSION['resident_id']);
+        
+        // Debug info for single payment
+        $debugInfo = [
+            'payment_type' => 'single',
+            'next_payment_month' => $nextPaymentMonth,
+            'payment_year' => $paymentYear,
+            'transaction_id' => $checkoutSession->payment_intent,
+            'success' => $success
+        ];
+        echo "<script>console.log('Single Payment Processing:', " . json_encode($debugInfo) . ");</script>";
     }
     
-    // For new users, if paying for a future month in registration year
-    if (!$latestPayment && $nextPaymentMonth > $currentMonth && $joinedIn['year'] < $currentYear) {
-        $paymentYear = $joinedIn['year'];
-    }
-    
-    // Add the payment
-    $paymentsInsert = new Payments();
-    $success = $paymentsInsert->addPayment($nextPaymentMonth, $paymentYear, $checkoutSession->payment_intent, $_SESSION['resident_id']);
-    
-    // Debug info
-    $debugInfo = [
-        'next_payment_month' => $nextPaymentMonth,
-        'payment_year' => $paymentYear,
-        'transaction_id' => $checkoutSession->payment_intent,
-        'success' => $success
-    ];
-    echo "<script>console.log('Payment Processing:', " . json_encode($debugInfo) . ");</script>";
+    // Clear payment info from session
+    unset($_SESSION['payment_info']);
 }
 ?>
 
@@ -98,7 +140,15 @@ if ($nextPaymentMonth !== null) {
                     <h4 class="modal-title w-100 text-center font-weight-bold" id="paymentSuccessModalLabel">Payment Successful!</h4>
                 </div>
                 <div class="modal-body text-center py-4">
-                    <p class="lead mb-2">Thank you for your payment for Month <?php echo $nextPaymentMonth; ?>.</p>
+                    <p class="lead mb-2">
+                        Thank you for your payment<?php 
+                        if ($payAll && !empty($unpaidMonths)) {
+                            echo ' for ' . count($unpaidMonths) . ' months';
+                        } else {
+                            echo ' for Month ' . $nextPaymentMonth;
+                        }
+                        ?>.
+                    </p>
                     <div class="mb-3">
                         <span class="badge badge-success p-2" style="font-size: 1rem;">Transaction ID:</span>
                         <span class="font-weight-bold text-dark ml-2" style="word-break: break-all;"> <?php echo $checkoutSession->payment_intent; ?> </span>

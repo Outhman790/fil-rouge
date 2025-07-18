@@ -8,7 +8,7 @@ require_once './classes/payments.class.php';
  * @param int $resident_id The resident's ID
  * @param array $registration_date Array with 'month' and 'year' keys from extractMonthYear()
  * @param array|null $last_payment Array with 'payment_month' and 'payment_year' keys, or null if no payments
- * @return array Array of month numbers that are unpaid
+ * @return array Array of month-year pairs that are unpaid (e.g., [['month' => 8, 'year' => 2025], ...])
  */
 function calculateUnpaidMonths($resident_id, $registration_date, $last_payment = null)
 {
@@ -27,26 +27,26 @@ function calculateUnpaidMonths($resident_id, $registration_date, $last_payment =
             $start_month = $registration_month + 1;
             if ($start_month <= $current_month) {
                 for ($month = $start_month; $month <= $current_month; $month++) {
-                    $unpaid_months[] = $month;
+                    $unpaid_months[] = ['month' => $month, 'year' => $current_year];
                 }
             }
         } else {
             // User registered in previous year(s)
             // Add remaining months from registration year
             for ($month = $registration_month + 1; $month <= 12; $month++) {
-                $unpaid_months[] = $month;
+                $unpaid_months[] = ['month' => $month, 'year' => $registration_year];
             }
             
             // Add full years between registration and current year
             for ($year = $registration_year + 1; $year < $current_year; $year++) {
                 for ($month = 1; $month <= 12; $month++) {
-                    $unpaid_months[] = $month;
+                    $unpaid_months[] = ['month' => $month, 'year' => $year];
                 }
             }
             
             // Add months from current year
             for ($month = 1; $month <= $current_month; $month++) {
-                $unpaid_months[] = $month;
+                $unpaid_months[] = ['month' => $month, 'year' => $current_year];
             }
         }
         
@@ -65,25 +65,25 @@ function calculateUnpaidMonths($resident_id, $registration_date, $last_payment =
     if ($last_paid_year === $current_year) {
         // Same year - just add months between last payment and current month
         for ($month = $last_paid_month + 1; $month <= $current_month; $month++) {
-            $unpaid_months[] = $month;
+            $unpaid_months[] = ['month' => $month, 'year' => $current_year];
         }
     } else {
         // Different years
         // Add remaining months from last paid year
         for ($month = $last_paid_month + 1; $month <= 12; $month++) {
-            $unpaid_months[] = $month;
+            $unpaid_months[] = ['month' => $month, 'year' => $last_paid_year];
         }
         
         // Add full years between last paid year and current year
         for ($year = $last_paid_year + 1; $year < $current_year; $year++) {
             for ($month = 1; $month <= 12; $month++) {
-                $unpaid_months[] = $month;
+                $unpaid_months[] = ['month' => $month, 'year' => $year];
             }
         }
         
         // Add months from current year
         for ($month = 1; $month <= $current_month; $month++) {
-            $unpaid_months[] = $month;
+            $unpaid_months[] = ['month' => $month, 'year' => $current_year];
         }
     }
     
@@ -93,7 +93,7 @@ function calculateUnpaidMonths($resident_id, $registration_date, $last_payment =
 /**
  * Get the next month that needs to be paid
  * 
- * @param array $unpaid_months Array of unpaid month numbers
+ * @param array $unpaid_months Array of unpaid month-year pairs
  * @return int|null The next month to pay, or null if all paid
  */
 function getNextPaymentMonth($unpaid_months)
@@ -102,7 +102,8 @@ function getNextPaymentMonth($unpaid_months)
         return null;
     }
     
-    return $unpaid_months[0];
+    // Return the month number from the first unpaid month
+    return $unpaid_months[0]['month'];
 }
 
 // Legacy functions for backward compatibility

@@ -281,7 +281,7 @@ if (!isset($_SESSION['resident_id']) || !isset($_SESSION['status']) || $_SESSION
                         </div>
                         <div class="col-md-6">
                             <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <select class="form-control form-control-sm" id="statusFilter">
                                         <option value="all">All Status</option>
                                         <option value="paid">Paid Only</option>
@@ -289,9 +289,28 @@ if (!isset($_SESSION['resident_id']) || !isset($_SESSION['status']) || $_SESSION
                                         <option value="overdue">Overdue Only</option>
                                     </select>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <input type="month" class="form-control form-control-sm" id="monthFilter" 
                                            placeholder="Filter by month">
+                                </div>
+                                <div class="col-md-4">
+                                    <input type="text" class="form-control form-control-sm" id="searchFilter" 
+                                           placeholder="Search payments...">
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-md-12">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="quick-filters">
+                                            <button class="btn btn-sm btn-outline-primary mr-1" data-filter="recent">Recent</button>
+                                            <button class="btn btn-sm btn-outline-danger mr-1" data-filter="overdue">Overdue</button>
+                                            <button class="btn btn-sm btn-outline-success mr-1" data-filter="paid">Paid</button>
+                                            <button class="btn btn-sm btn-outline-secondary" id="clearFilters">Clear All</button>
+                                        </div>
+                                        <div class="search-counter">
+                                            <small class="text-muted">Showing <span id="visibleCount">0</span> of <span id="totalCount">0</span> payments</small>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -406,37 +425,188 @@ if (!isset($_SESSION['resident_id']) || !isset($_SESSION['status']) || $_SESSION
                 filterTable($('#statusFilter').val(), filterValue);
             });
             
-            function filterTable(statusFilter, monthFilter) {
+            // Initialize counters
+            var totalRows = $('#paymentTable tbody tr').length;
+            $('#totalCount').text(totalRows);
+            $('#visibleCount').text(totalRows);
+            
+            // Enhanced table filtering
+            $('#statusFilter').on('change', function() {
+                applyFilters();
+            });
+            
+            $('#monthFilter').on('change', function() {
+                applyFilters();
+            });
+            
+            $('#searchFilter').on('input', function() {
+                applyFilters();
+            });
+            
+            // Quick filter buttons
+            $('.quick-filters button[data-filter]').on('click', function() {
+                var filterType = $(this).data('filter');
+                
+                // Remove active class from all quick filter buttons
+                $('.quick-filters button[data-filter]').removeClass('btn-primary').addClass('btn-outline-primary');
+                $('.quick-filters button[data-filter]').removeClass('btn-danger').addClass('btn-outline-danger');
+                $('.quick-filters button[data-filter]').removeClass('btn-success').addClass('btn-outline-success');
+                
+                // Add active class to clicked button
+                $(this).removeClass('btn-outline-primary btn-outline-danger btn-outline-success');
+                
+                if (filterType === 'recent') {
+                    $(this).addClass('btn-primary');
+                    $('#monthFilter').val('');
+                    $('#statusFilter').val('all');
+                    $('#searchFilter').val('');
+                    filterRecent();
+                } else if (filterType === 'overdue') {
+                    $(this).addClass('btn-danger');
+                    $('#statusFilter').val('overdue');
+                    $('#monthFilter').val('');
+                    $('#searchFilter').val('');
+                    applyFilters();
+                } else if (filterType === 'paid') {
+                    $(this).addClass('btn-success');
+                    $('#statusFilter').val('paid');
+                    $('#monthFilter').val('');
+                    $('#searchFilter').val('');
+                    applyFilters();
+                }
+            });
+            
+            // Clear filters button
+            $('#clearFilters').on('click', function() {
+                $('#statusFilter').val('all');
+                $('#monthFilter').val('');
+                $('#searchFilter').val('');
+                $('.quick-filters button[data-filter]').removeClass('btn-primary btn-danger btn-success')
+                    .addClass('btn-outline-primary').filter('[data-filter="overdue"]').addClass('btn-outline-danger')
+                    .filter('[data-filter="paid"]').addClass('btn-outline-success');
+                applyFilters();
+            });
+            
+            function filterRecent() {
+                var currentDate = new Date();
+                var currentYear = currentDate.getFullYear();
+                var currentMonth = currentDate.getMonth() + 1;
+                var visibleRows = 0;
+                
                 $('#paymentTable tbody tr').each(function() {
                     var row = $(this);
+                    if (row.attr('id') === 'no-results-message') return;
+                    
+                    var monthData = row.data('month');
+                    if (monthData) {
+                        var parts = monthData.split('-');
+                        var year = parseInt(parts[0]);
+                        var month = parseInt(parts[1]);
+                        
+                        // Show if within last 3 months
+                        var isRecent = false;
+                        for (var i = 0; i < 3; i++) {
+                            var checkMonth = currentMonth - i;
+                            var checkYear = currentYear;
+                            if (checkMonth <= 0) {
+                                checkMonth += 12;
+                                checkYear--;
+                            }
+                            if (year === checkYear && month === checkMonth) {
+                                isRecent = true;
+                                break;
+                            }
+                        }
+                        
+                        if (isRecent) {
+                            row.show(200);
+                            visibleRows++;
+                        } else {
+                            row.hide(200);
+                        }
+                    }
+                });
+                
+                updateResultsMessage(visibleRows);
+            }
+            
+            function applyFilters() {
+                var statusFilter = $('#statusFilter').val();
+                var monthFilter = $('#monthFilter').val();
+                var searchFilter = $('#searchFilter').val().toLowerCase();
+                var visibleRows = 0;
+                
+                $('#paymentTable tbody tr').each(function() {
+                    var row = $(this);
+                    
+                    // Skip the no-results message row
+                    if (row.attr('id') === 'no-results-message') return;
+                    
                     var status = row.data('status');
                     var month = row.data('month');
                     var isOverdue = row.data('overdue');
+                    var rowText = row.text().toLowerCase();
                     
                     var showRow = true;
                     
-                    // Status filter
+                    // Status filter logic
                     if (statusFilter !== 'all') {
                         if (statusFilter === 'paid' && status !== 'paid') {
                             showRow = false;
                         } else if (statusFilter === 'unpaid' && status !== 'unpaid') {
                             showRow = false;
-                        } else if (statusFilter === 'overdue' && !isOverdue) {
+                        } else if (statusFilter === 'overdue' && (isOverdue !== true && isOverdue !== 'true')) {
                             showRow = false;
                         }
                     }
                     
-                    // Month filter
-                    if (monthFilter && month !== monthFilter) {
-                        showRow = false;
+                    // Month filter logic
+                    if (monthFilter && monthFilter.trim() !== '') {
+                        if (month !== monthFilter) {
+                            showRow = false;
+                        }
                     }
                     
+                    // Search filter logic
+                    if (searchFilter && searchFilter.trim() !== '') {
+                        if (rowText.indexOf(searchFilter) === -1) {
+                            showRow = false;
+                        }
+                    }
+                    
+                    // Show/hide row with animation
                     if (showRow) {
-                        row.show();
+                        row.show(200);
+                        visibleRows++;
                     } else {
-                        row.hide();
+                        row.hide(200);
                     }
                 });
+                
+                updateResultsMessage(visibleRows);
+            }
+            
+            function updateResultsMessage(visibleRows) {
+                // Update counter
+                $('#visibleCount').text(visibleRows);
+                
+                // Show/hide "no results" message
+                if (visibleRows === 0) {
+                    if ($('#no-results-message').length === 0) {
+                        $('#paymentTable tbody').append(
+                            '<tr id="no-results-message">' +
+                            '<td colspan="6" class="text-center text-muted py-4">' +
+                            '<i class="fas fa-search fa-2x mb-2"></i>' +
+                            '<br>No payments found matching your criteria.' +
+                            '<br><small class="text-muted mt-2">Try adjusting your filters or search terms.</small>' +
+                            '</td>' +
+                            '</tr>'
+                        );
+                    }
+                    $('#no-results-message').show();
+                } else {
+                    $('#no-results-message').hide();
+                }
             }
             
             // Add hover effects to table rows

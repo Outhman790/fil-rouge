@@ -148,6 +148,7 @@ class User extends DB
         }
     }
 
+
     public function countLikes($announcementId)
     {
         try {

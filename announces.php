@@ -10,22 +10,21 @@ if (isset($_SESSION['resident_id'])) :
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Announcements</title>
+    <title>Announcements - Obuildings</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <!-- Custom CSS -->
-    <style>
-    /* Add custom styles here */
-    </style>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="css/user-dashboard.css">
 </head>
 
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<body class="user-dashboard">
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-modern">
         <div class="container">
-            <a href="homepage.php">
-                <img class="navbar-brand" src="assets/img/logo white.png" style="width: 200px; height: 60px">
-                </img>
+            <a class="navbar-brand" href="homepage.php">
+                <i class="fas fa-building mr-2"></i>Obuildings
             </a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,24 +32,36 @@ if (isset($_SESSION['resident_id'])) :
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="homepage.php">
+                            <i class="fas fa-home mr-1"></i>Home
+                        </a>
+                    </li>
                     <li class="nav-item active">
-                        <a class="nav-link" href="homepage.php">Home <span class="sr-only">(current)</span></a>
+                        <a class="nav-link" href="announces.php">
+                            <i class="fas fa-bullhorn mr-1"></i>Announces <span class="sr-only">(current)</span>
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="announces.php">Announces</a>
+                        <a class="nav-link" href="payments.php">
+                            <i class="fas fa-credit-card mr-1"></i>Payments
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="payments.php">Payments</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="logout.php">Logout</a>
+                        <a class="nav-link" href="logout.php">
+                            <i class="fas fa-sign-out-alt mr-1"></i>Logout
+                        </a>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
-    <div class="container">
-        <h1 class="mt-5 mb-3 text-center">Announcements</h1>
+    <div class="container my-4">
+        <div class="glass-container p-4">
+            <div class="welcome-text text-center mb-4">
+                <h1><i class="fas fa-bullhorn mr-3"></i>Announcements</h1>
+                <p class="lead">Stay updated with the latest building news</p>
+            </div>
         <?php
             require_once 'classes/admin.class.php';
             require_once 'classes/user.class.php';
@@ -248,6 +259,8 @@ if (isset($_SESSION['resident_id'])) :
 
     <!-- Bootstrap JS -->
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        </div>
+    </div>
 </body>
 
 </html>

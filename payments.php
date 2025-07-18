@@ -1,5 +1,12 @@
 <?php
+session_start();
 require 'classes/user.class.php';
+
+// Check if user is logged in and is a resident
+if (!isset($_SESSION['resident_id']) || !isset($_SESSION['status']) || $_SESSION['status'] !== 'Resident') {
+    header('location: login.php');
+    exit();
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -51,15 +58,15 @@ require 'classes/user.class.php';
 
     $currentYear = intval(date("Y"));
     $currentMonth = intval(date("n"));
-    
+
     // Calculate unpaid months using the new logic
     $latestPaymentObj = new User();
     $latestPayment = ($countPayments == 0) ? null : $latestPaymentObj->getLatestPayment($_SESSION['resident_id']);
-    
+
     // Use the new calculateUnpaidMonths function
     $unpaidMonths = calculateUnpaidMonths($_SESSION['resident_id'], $joinedIn, $latestPayment);
     $nextPaymentMonth = getNextPaymentMonth($unpaidMonths);
-    
+
     // Debug information (can be removed in production)
     $debugInfo = [
         'resident_id' => $_SESSION['resident_id'],
@@ -69,7 +76,7 @@ require 'classes/user.class.php';
         'next_payment_month' => $nextPaymentMonth
     ];
     echo "<script>console.log('Payment Debug Info:', " . json_encode($debugInfo) . ");</script>";
-    
+
     if (!empty($unpaidMonths)) : ?>
         <div class="alert alert-danger text-center" role="alert">
             You didn't pay <?php echo count($unpaidMonths) ?> month<?php echo count($unpaidMonths) > 1 ? 's' : '' ?>.

@@ -282,21 +282,25 @@ body.user-dashboard {
 /* Search counter */
 .search-counter {
     font-size: 0.9rem;
-    color: #ffffff;
+    color: #ffffff !important;
     background-color: rgba(0, 0, 0, 0.1);
     padding: 0.25rem 0.5rem;
     border-radius: 8px;
     backdrop-filter: blur(5px);
 }
 
+.search-counter .text-muted {
+    color: #ffffff !important;
+}
+
 .search-counter #visibleCount {
     font-weight: 600;
-    color: #ffeb3b;
+    color: #ffffff !important;
 }
 
 .search-counter #totalCount {
     font-weight: 600;
-    color: #ffffff;
+    color: #ffffff !important;
 }
 
 /* Search input enhancements */

@@ -15,14 +15,10 @@ if (isset($_POST['login'])) {
     include('../classes/loginContr.class.php');
     $login = new LoginController($email, $password);
 
-    // running error handler and user signup
+    // running error handler and user login
     $login->loginUser();
-
-    // Going back to Admin dashboard page
-    session_start();
-    if ($_SESSION['email']) {
-        header('location: ../index.php');
-    }
+    
+    // The redirect is handled in the login class based on user status
 } else {
     header('location: ../index.php');
 }

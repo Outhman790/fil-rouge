@@ -28,7 +28,13 @@ class Login extends DB
             $_SESSION['resident_id'] = $userData['resident_id'];
             $_SESSION['username'] = $userData['username'];
             $_SESSION['status'] = $userData['status'];
-            header('location: ../index.php');
+            
+            // Redirect based on user status
+            if ($userData['status'] === 'Admin') {
+                header('location: ../index.php');
+            } else {
+                header('location: ../homepage.php');
+            }
             exit();
         }
     }

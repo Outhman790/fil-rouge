@@ -24,8 +24,23 @@ else :
     $unpaidMonths = calculateUnpaidMonths($_SESSION['resident_id'], $joinedIn, $latestPayment);
     $nextPaymentMonth = getNextPaymentMonth($unpaidMonths);
     
+    // Check if user wants to pay all unpaid months
+    $payAll = isset($_GET['pay_all']) && $_GET['pay_all'] == '1';
+    $specificMonth = isset($_GET['month']) ? (int)$_GET['month'] : null;
+    $specificYear = isset($_GET['year']) ? (int)$_GET['year'] : null;
+    
     // Determine if user has unpaid months
     $hasUnpaidMonths = !empty($unpaidMonths);
+    
+    // Calculate payment details
+    $monthlyFee = 300;
+    if ($payAll) {
+        $totalAmount = count($unpaidMonths) * $monthlyFee;
+        $paymentDescription = count($unpaidMonths) . ' months';
+    } else {
+        $totalAmount = $monthlyFee;
+        $paymentDescription = '1 month';
+    }
     
     // Get month name for display
     $monthNames = [
@@ -33,7 +48,14 @@ else :
         5 => 'May', 6 => 'June', 7 => 'July', 8 => 'August',
         9 => 'September', 10 => 'October', 11 => 'November', 12 => 'December'
     ];
-    $paymentMonthName = $nextPaymentMonth ? $monthNames[$nextPaymentMonth] : 'Current';
+    
+    if ($specificMonth && $specificYear) {
+        $paymentMonthName = $monthNames[$specificMonth] . ' ' . $specificYear;
+    } elseif ($payAll) {
+        $paymentMonthName = 'All Unpaid Months';
+    } else {
+        $paymentMonthName = $nextPaymentMonth ? $monthNames[$nextPaymentMonth] : 'Current';
+    }
 ?>
     <!doctype html>
     <html lang="en">
@@ -67,26 +89,54 @@ else :
                                 <center>
                                     <img src="assets/img/logo.png" />
                                 </center> <br />
-                                <h5 class="card-title text-center">Payment for Month <?php echo $nextPaymentMonth ?> (<?php echo $paymentMonthName ?>)</h5>
+                                <h5 class="card-title text-center mb-4">Payment for <?php echo $paymentMonthName ?></h5>
+                                
+                                <?php if ($payAll) : ?>
+                                    <div class="alert alert-info text-center mb-4">
+                                        <i class="fas fa-info-circle mr-2"></i>
+                                        <strong>Bulk Payment:</strong> You are paying for <?php echo count($unpaidMonths) ?> months
+                                    </div>
+                                <?php endif; ?>
+                                
                                 <form action="./classes/checkout.class.php" method="post">
+                                    <input type="hidden" name="pay_all" value="<?php echo $payAll ? '1' : '0' ?>">
+                                    <input type="hidden" name="unpaid_months" value="<?php echo htmlspecialchars(json_encode($unpaidMonths)) ?>">
+                                    
                                     <div class="form-group">
                                         <label for="fullName">Name <span class="required">*</span></label>
-                                        <input type="text" name="fullName" id="fullName" class="form-control" placeholder="full Name" value=<?php echo $_SESSION['fName'] . ' ' . $_SESSION['lName'] ?> readonly required />
+                                        <input type="text" name="fullName" id="fullName" class="form-control" placeholder="full Name" value="<?php echo $_SESSION['fName'] . ' ' . $_SESSION['lName'] ?>" readonly required />
                                     </div>
                                     <div class="form-group">
                                         <label for="email">Email <span class="required">*</span></label>
-                                        <input type="email" name="email" id="email" class="form-control" placeholder="Email" value=<?php echo $_SESSION['email'] ?> readonly required />
+                                        <input type="email" name="email" id="email" class="form-control" placeholder="Email" value="<?php echo $_SESSION['email'] ?>" readonly required />
                                     </div>
                                     <div class="form-group">
                                         <label for="username">Username <span class="required">*</span></label>
-                                        <input type="text" name="username" id="username" class="form-control" value=<?php echo $_SESSION['username'] ?> placeholder="Contact" maxlength="10" readonly required />
+                                        <input type="text" name="username" id="username" class="form-control" value="<?php echo $_SESSION['username'] ?>" placeholder="Contact" maxlength="10" readonly required />
                                     </div>
                                     <div class="form-group">
-                                        <label for="amount">Fee Amount <span class="required">*</span></label>
-                                        <input type="text" name="amount" id="amount" class="form-control" placeholder="Amount" value="300" readonly required />
+                                        <label for="description">Payment Description</label>
+                                        <input type="text" name="description" id="description" class="form-control" value="<?php echo $paymentDescription; ?>" readonly />
                                     </div>
-                                    <button type="submit" name="payNowBtn" class="btn btn-lg btn-primary btn-block">Pay Now
-                                        <span class="fa fa-angle-right"></span></button>
+                                    <div class="form-group">
+                                        <label for="amount">Total Amount <span class="required">*</span></label>
+                                        <div class="input-group">
+                                            <input type="text" name="amount" id="amount" class="form-control" placeholder="Amount" value="<?php echo $totalAmount; ?>" readonly required />
+                                            <div class="input-group-append">
+                                                <span class="input-group-text">MAD</span>
+                                            </div>
+                                        </div>
+                                        <?php if ($payAll) : ?>
+                                            <small class="form-text text-muted">
+                                                <i class="fas fa-calculator mr-1"></i>
+                                                <?php echo count($unpaidMonths) ?> months × <?php echo $monthlyFee ?> MAD = <?php echo $totalAmount ?> MAD
+                                            </small>
+                                        <?php endif; ?>
+                                    </div>
+                                    <button type="submit" name="payNowBtn" class="btn btn-lg btn-primary btn-block">
+                                        <i class="fas fa-credit-card mr-2"></i>Pay <?php echo $totalAmount ?> MAD
+                                        <span class="fa fa-angle-right ml-2"></span>
+                                    </button>
                                 </form>
                             </div>
                         </div>
@@ -99,7 +149,8 @@ else :
                 <div class="row mt-5">
                     <div class="col-md-6 offset-md-3">
                         <div class="alert alert-info text-center" role="alert">
-                            <h4 class="alert-heading">You have paid all required months.</h4>
+                            <h4 class="alert-heading">All Payments Up to Date!</h4>
+                            <p class="mb-0">Your next payment will be due in <?php echo $monthNames[date('n') + 1] ?? 'the next month' ?>.</p>
                         </div>
                         <div class="text-center">
                             <a href="homepage.php" class="btn btn-primary">Back to Homepage</a>

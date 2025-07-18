@@ -1,0 +1,158 @@
+/* Custom styles for user dashboard pages - complementing Bootstrap */
+
+/* Body and Background */
+body.user-dashboard {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Glassmorphism effect for main containers */
+.glass-container {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* Enhanced navbar styling */
+.navbar-modern {
+    background: linear-gradient(135deg, #2c3e50, #34495e) !important;
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+.nav-link {
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+    transform: translateY(-2px);
+}
+
+/* Payment status cards */
+.payment-status-card {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+    border: none;
+    border-radius: 15px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
+}
+
+.payment-status-card.success {
+    background: linear-gradient(135deg, #56ab2f, #a8e6cf);
+    box-shadow: 0 10px 30px rgba(86, 171, 47, 0.3);
+}
+
+/* Shimmer animation */
+.payment-status-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+    transform: rotate(45deg);
+    animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+    100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+}
+
+/* Custom button styling */
+.btn-pay {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border: none;
+    border-radius: 50px;
+    font-weight: 600;
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+    transition: all 0.3s ease;
+}
+
+.btn-pay:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
+    color: white;
+}
+
+/* Table enhancements */
+.table-modern {
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.table-modern thead th {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    font-weight: 600;
+}
+
+.table-modern tbody tr {
+    transition: all 0.3s ease;
+}
+
+.table-modern tbody tr:hover {
+    background-color: #f8f9ff;
+    transform: scale(1.01);
+}
+
+.table-modern tbody td {
+    border: none;
+    border-bottom: 1px solid #e9ecef;
+}
+
+/* Transaction ID styling */
+.transaction-id {
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+}
+
+/* Payment date styling */
+.payment-date {
+    font-weight: 600;
+    color: #667eea;
+}
+
+/* Month badge */
+.month-badge {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+    color: white;
+    border-radius: 25px;
+    font-weight: bold;
+}
+
+/* Stat cards hover effect */
+.stat-card:hover {
+    transform: translateY(-5px);
+    transition: all 0.3s ease;
+}
+
+/* Welcome text styling */
+.welcome-text {
+    color: #2c3e50;
+}
+
+/* Payment amount styling */
+.payment-amount {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin: 1rem 0;
+}
+
+/* Payment icon styling */
+.payment-icon {
+    font-size: 3rem;
+    opacity: 0.9;
+}

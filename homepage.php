@@ -18,45 +18,69 @@ if (isset($_SESSION['status']) && $_SESSION['status'] === 'Resident') {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Welcome <?php echo $_SESSION['fName'] . $_SESSION['lName'] ?></title>
+        <title>Home - Obuildings</title>
         <!-- Include Bootstrap CSS -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+        <!-- Custom Styles -->
+        <link rel="stylesheet" href="css/user-dashboard.css">
     </head>
 
-    <body>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <body class="user-dashboard">
+        <nav class="navbar navbar-expand-lg navbar-dark navbar-modern">
             <div class="container">
-                <img class="navbar-brand" src="assets/img/logo white.png" style="width: 200px; height: 60px"></img>
+                <a class="navbar-brand" href="homepage.php">
+                    <i class="fas fa-building mr-2"></i>Obuildings
+                </a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ml-auto">
                         <li class="nav-item active">
-                            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                            <a class="nav-link" href="homepage.php">
+                                <i class="fas fa-home mr-1"></i>Home <span class="sr-only">(current)</span>
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="payments.php">Payments</a>
+                            <a class="nav-link" href="payments.php">
+                                <i class="fas fa-credit-card mr-1"></i>Payments
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="announces.php">Announces</a>
+                            <a class="nav-link" href="announces.php">
+                                <i class="fas fa-bullhorn mr-1"></i>Announces
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="logout.php">Logout</a>
+                            <a class="nav-link" href="logout.php">
+                                <i class="fas fa-sign-out-alt mr-1"></i>Logout
+                            </a>
                         </li>
                     </ul>
                 </div>
             </div>
         </nav>
 
-        <div class="container mt-4">
-            <h1>Welcome, <?php echo $_SESSION['fName'] . ' ' . $_SESSION['lName'] ?>!</h1>
-            <p>Thank you for using Obuildings.</p>
-            <a href="payments.php" class="btn btn-primary">See payments</a>
-        </div>
-        <div class="container mt-4">
-            <h1>Sandik Purchases List</h1>
-            <table class="table table-bordered">
+        <div class="container my-4">
+            <div class="glass-container p-4">
+                <div class="welcome-text text-center mb-4">
+                    <h1><i class="fas fa-home mr-3"></i>Welcome Home!</h1>
+                    <p class="lead">Hello, <?php echo $_SESSION['fName'] . ' ' . $_SESSION['lName'] ?>!</p>
+                    <p class="text-muted">Thank you for using Obuildings.</p>
+                    <a href="payments.php" class="btn btn-pay btn-lg px-4">
+                        <i class="fas fa-credit-card mr-2"></i>View Payments
+                    </a>
+                </div>
+                
+                <hr class="my-4">
+                
+                <h2 class="text-center mb-4">
+                    <i class="fas fa-shopping-cart mr-2"></i>Building Expenses
+                </h2>
+            <div class="card table-modern border-0">
+                <table class="table table-hover mb-0">
                 <thead>
                     <tr>
                         <th>Name</th>
@@ -84,9 +108,10 @@ if (isset($_SESSION['status']) && $_SESSION['status'] === 'Resident') {
                     <?php endforeach; ?>
                 </tbody>
 
-            </table>
+                </table>
+            </div>
             <!-- Pagination links -->
-            <nav aria-label="Pagination" class="d-flex justify-content-center">
+            <nav aria-label="Pagination" class="d-flex justify-content-center mt-4">
                 <ul class="pagination">
                     <?php for ($i = 1; $i <= $totalPages; $i++) : ?>
                         <li class="page-item <?php echo ($currentpage == $i) ? 'active' : ''; ?>">
@@ -95,6 +120,7 @@ if (isset($_SESSION['status']) && $_SESSION['status'] === 'Resident') {
                     <?php endfor; ?>
                 </ul>
             </nav>
+            </div>
         </div>
         <!-- Image Modal -->
         <div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true">

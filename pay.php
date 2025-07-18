@@ -1,11 +1,39 @@
 <?php
 session_start();
 require_once 'classes/payments.class.php';
+require_once 'classes/admin.class.php';
+require_once 'classes/user.class.php';
+require_once 'functions/extractMonthAndYear.php';
+require_once 'functions/getUnpaidMonths.php';
+
 if (isset($_SESSION['status'])  && $_SESSION['status'] === 'Admin') :
     header('location: index.php');
 else :
+    // Get user's registration info and payment history
+    $adminObj = new Admin();
+    $resident = $adminObj->selectResident($_SESSION['resident_id']);
+    $joinedIn = extractMonthYear($resident['joinedIn']);
+    
     $paymentObj = new Payments();
-    $iscurrentPaid = $paymentObj->hasPaidCurrentMonth($_SESSION['resident_id']);
+    $countPayments = $paymentObj->countPaymentsResident($_SESSION['resident_id']);
+    
+    $latestPaymentObj = new User();
+    $latestPayment = ($countPayments == 0) ? null : $latestPaymentObj->getLatestPayment($_SESSION['resident_id']);
+    
+    // Calculate unpaid months and get the next payment month
+    $unpaidMonths = calculateUnpaidMonths($_SESSION['resident_id'], $joinedIn, $latestPayment);
+    $nextPaymentMonth = getNextPaymentMonth($unpaidMonths);
+    
+    // Determine if user has unpaid months
+    $hasUnpaidMonths = !empty($unpaidMonths);
+    
+    // Get month name for display
+    $monthNames = [
+        1 => 'January', 2 => 'February', 3 => 'March', 4 => 'April',
+        5 => 'May', 6 => 'June', 7 => 'July', 8 => 'August',
+        9 => 'September', 10 => 'October', 11 => 'November', 12 => 'December'
+    ];
+    $paymentMonthName = $nextPaymentMonth ? $monthNames[$nextPaymentMonth] : 'Current';
 ?>
     <!doctype html>
     <html lang="en">
@@ -30,7 +58,7 @@ else :
     </head>
 
     <body>
-        <?php if (!$iscurrentPaid) : ?>
+        <?php if ($hasUnpaidMonths) : ?>
             <div class="container">
                 <div class="row">
                     <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
@@ -39,7 +67,7 @@ else :
                                 <center>
                                     <img src="assets/img/logo.png" />
                                 </center> <br />
-                                <h5 class="card-title text-center">Payment of month <?php echo date("F") ?></h5>
+                                <h5 class="card-title text-center">Payment for Month <?php echo $nextPaymentMonth ?> (<?php echo $paymentMonthName ?>)</h5>
                                 <form action="./classes/checkout.class.php" method="post">
                                     <div class="form-group">
                                         <label for="fullName">Name <span class="required">*</span></label>
@@ -71,7 +99,7 @@ else :
                 <div class="row mt-5">
                     <div class="col-md-6 offset-md-3">
                         <div class="alert alert-info text-center" role="alert">
-                            <h4 class="alert-heading">You've already paid this month.</h4>
+                            <h4 class="alert-heading">You have paid all required months.</h4>
                         </div>
                         <div class="text-center">
                             <a href="homepage.php" class="btn btn-primary">Back to Homepage</a>

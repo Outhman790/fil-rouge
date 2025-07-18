@@ -127,20 +127,18 @@ if (isset($_SESSION['resident_id'])) :
                         <div class="d-flex justify-content-between align-items-center flex-wrap">
                             <!-- Like/Unlike Section -->
                             <div class="like-section d-flex align-items-center mb-3 mb-md-0">
-                                <button class="btn btn-outline-danger btn-sm rounded-pill like-button mr-2">
+                                <button class="btn btn-outline-danger btn-sm rounded-pill like-button mr-3" 
+                                        data-announcement-id="<?php echo $announce['announcement_id']; ?>">
                                     <i class="fas fa-heart mr-1"></i>Like
-                                </button>
-                                <button class="btn btn-outline-info btn-sm rounded-pill dislike-button mr-3">
-                                    <i class="fas fa-heart-broken mr-1"></i>Unlike
                                 </button>
                                 <div class="like-stats text-muted small">
                                     <span class="mr-3">
                                         <i class="fas fa-heart text-danger mr-1"></i>
-                                        <span class="like-count font-weight-bold"><?php echo $countLikes['like_count'] ?></span> likes
+                                        <span class="like-count font-weight-bold" id="like-count-<?php echo $announce['announcement_id']; ?>"><?php echo $countLikes['like_count'] ?></span> likes
                                     </span>
                                     <span>
                                         <i class="fas fa-comment text-primary mr-1"></i>
-                                        <span class="font-weight-bold"><?php echo count($allComments) ?></span> comments
+                                        <span class="font-weight-bold comment-count" id="comment-count-<?php echo $announce['announcement_id']; ?>"><?php echo count($allComments) ?></span> comments
                                     </span>
                                 </div>
                             </div>
@@ -159,9 +157,11 @@ if (isset($_SESSION['resident_id'])) :
                                 </span>
                             </div>
                             <input type="text" class="form-control border-left-0 comment-input" 
-                                   placeholder="Share your thoughts about this announcement...">
+                                   placeholder="Share your thoughts about this announcement..."
+                                   id="comment-input-<?php echo $announce['announcement_id']; ?>">
                             <div class="input-group-append">
-                                <button class="btn btn-primary comment-button" type="button">
+                                <button class="btn btn-primary comment-button" type="button"
+                                        data-announcement-id="<?php echo $announce['announcement_id']; ?>">
                                     <i class="fas fa-paper-plane mr-1"></i>Post
                                 </button>
                             </div>
@@ -174,7 +174,7 @@ if (isset($_SESSION['resident_id'])) :
                             <h6 class="text-muted mb-3">
                                 <i class="fas fa-comments mr-2"></i>Comments (<?php echo count($allComments) ?>)
                             </h6>
-                            <div class="comments-list">
+                            <div class="comments-list" id="comments-list-<?php echo $announce['announcement_id']; ?>">
                                 <?php foreach ($allComments as $comment) : ?>
                                     <div class="comment-item bg-white rounded p-3 mb-3 shadow-sm">
                                         <div class="d-flex align-items-start">
@@ -232,65 +232,105 @@ if (isset($_SESSION['resident_id'])) :
         // Handle incoming messages from the server
         console.log('Received message:', event.data);
 
-        // Parse and process the message as needed
         try {
             const data = JSON.parse(event.data);
-            console.log(data);
+            console.log('Parsed data:', data);
+            
             if (data.type === 'comment') {
-                const comment = data.message;
-                const residentId = data.resident_id;
-                const announcementId = data.announcement_id;
-                const residentFullName = data.resident_fullName;
-                const createdAt = data.created_at;
-
-                // Create HTML elements for the comment
-                const commentContainer = document.createElement('div');
-                commentContainer.classList.add('comment-container', 'd-flex');
-
-                const commentAuthor = document.createElement('div');
-                commentAuthor.classList.add('comment-author', 'mb-2', 'mb-sm-3');
-                commentAuthor.innerHTML = `<strong>${residentFullName}</strong>`;
-
-                const commentMessage = document.createElement('div');
-                commentMessage.classList.add('flex-grow-1', 'comment-message', 'ml-3');
-                commentMessage.textContent = comment;
-
-                const commentDate = document.createElement('div');
-                commentDate.classList.add('comment-date', 'small', 'text-muted');
-                commentDate.textContent = createdAt;
-
-                // Append the comment elements to the comment container
-                commentContainer.appendChild(commentAuthor);
-                commentContainer.appendChild(commentMessage);
-                commentContainer.appendChild(commentDate);
-
-                // Get the comment container element
-                const commentsContainer = document.querySelector('.card-footer.comments-container');
-
-                // Append the comment container to the comments container
-                commentsContainer.appendChild(commentContainer);
-                const hr = document.createElement('hr');
-                hr.style = "margin: .25rem .5rem";
-                commentsContainer.appendChild(hr);
-            }
-        } catch (error) {
-            console.error('Error parsing JSON:', error);
-        }
-        try {
-            const data = JSON.parse(event.data);
-
-            if (data.type === 'like') {
-                let likeCount = document.querySelector('.like-count');
-                const residentId = data.resident_id;
-                const announcementId = data.announcement_id;
-                const countLikes = data.count_likes;
-                likeCount.innerHTML = countLikes;
-
+                addCommentToDOM(data);
+            } else if (data.type === 'like') {
+                updateLikeCount(data);
             }
         } catch (error) {
             console.error('Error parsing JSON:', error);
         }
     };
+
+    // Function to add comment to DOM
+    function addCommentToDOM(data) {
+        const announcementId = data.announcement_id;
+        const comment = data.message;
+        const residentFullName = data.resident_fullName;
+        const createdAt = data.created_at;
+
+        // Find the comments list for this specific announcement
+        const commentsList = document.getElementById(`comments-list-${announcementId}`);
+        
+        if (!commentsList) {
+            console.error('Comments list not found for announcement:', announcementId);
+            return;
+        }
+
+        // Create new comment element
+        const commentElement = document.createElement('div');
+        commentElement.className = 'comment-item bg-white rounded p-3 mb-3 shadow-sm new-comment';
+        commentElement.innerHTML = `
+            <div class="d-flex align-items-start">
+                <div class="comment-avatar mr-3">
+                    <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center" 
+                         style="width: 40px; height: 40px;">
+                        <i class="fas fa-user text-white"></i>
+                    </div>
+                </div>
+                <div class="comment-content flex-grow-1">
+                    <div class="comment-header d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="comment-author mb-0 text-primary font-weight-bold">
+                            ${residentFullName}
+                        </h6>
+                        <small class="comment-date text-muted">
+                            <i class="fas fa-clock mr-1"></i>
+                            ${formatDate(createdAt)}
+                        </small>
+                    </div>
+                    <p class="comment-text mb-0 text-dark">
+                        ${comment}
+                    </p>
+                </div>
+            </div>
+        `;
+
+        // Add to comments list
+        commentsList.appendChild(commentElement);
+
+        // Update comment count
+        const commentCountElement = document.getElementById(`comment-count-${announcementId}`);
+        if (commentCountElement) {
+            const currentCount = parseInt(commentCountElement.textContent);
+            commentCountElement.textContent = currentCount + 1;
+        }
+
+        // Show "No comments" message if this is the first comment
+        const noCommentsMessage = commentsList.parentElement.querySelector('.text-center.py-4');
+        if (noCommentsMessage) {
+            noCommentsMessage.style.display = 'none';
+        }
+
+        // Scroll to new comment
+        commentElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // Function to update like count
+    function updateLikeCount(data) {
+        const announcementId = data.announcement_id;
+        const countLikes = data.count_likes;
+        
+        const likeCountElement = document.getElementById(`like-count-${announcementId}`);
+        if (likeCountElement) {
+            likeCountElement.textContent = countLikes;
+        }
+    }
+
+    // Function to format date
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit'
+        });
+    }
 
 
     socket.onclose = function(event) {
@@ -340,40 +380,73 @@ if (isset($_SESSION['resident_id'])) :
         }
     }
 
-    // Example usage: sending a comment
-    const commentButton = document.querySelector('.comment-button');
-    const commentInput = document.querySelector('.comment-input');
+    // Event delegation for multiple announcement cards
+    document.addEventListener('click', function(event) {
+        // Handle comment button clicks
+        if (event.target.classList.contains('comment-button') || event.target.closest('.comment-button')) {
+            const button = event.target.classList.contains('comment-button') ? event.target : event.target.closest('.comment-button');
+            const announcementId = button.dataset.announcementId;
+            const commentInput = document.getElementById(`comment-input-${announcementId}`);
+            const comment = commentInput.value.trim();
+            
+            if (comment !== '') {
+                const residentId = '<?php echo $_SESSION['resident_id']; ?>';
+                const residentFullName = '<?php echo $_SESSION['fName'] . ' ' .  $_SESSION['lName'] ?>';
+                
+                // Send the comment to the server
+                sendMessage(JSON.stringify({
+                    type: 'comment',
+                    message: comment,
+                    resident_id: residentId,
+                    resident_fullName: residentFullName,
+                    announcement_id: announcementId,
+                }));
 
-    commentButton.addEventListener('click', function() {
-        const comment = commentInput.value;
-        const residentId = '<?php echo $_SESSION['resident_id']; ?>';
-        const residentFullName = '<?php echo $_SESSION['fName'] . ' ' .  $_SESSION['lName'] ?>';
-        const announcementId = this.closest('.card').dataset.announcementId;
-        if (comment !== '') {
-            // Send the comment to the server
+                // Clear the comment input
+                commentInput.value = '';
+            }
+        }
+        
+        // Handle like button clicks
+        if (event.target.classList.contains('like-button') || event.target.closest('.like-button')) {
+            const button = event.target.classList.contains('like-button') ? event.target : event.target.closest('.like-button');
+            const announcementId = button.dataset.announcementId;
+            const residentId = '<?php echo $_SESSION['resident_id']; ?>';
+            
             sendMessage(JSON.stringify({
-                type: 'comment',
-                message: comment,
-                resident_id: residentId,
-                resident_fullName: residentFullName,
+                type: 'like',
                 announcement_id: announcementId,
+                resident_id: residentId,
             }));
+        }
+        
+    });
 
-            // Clear the comment input
-            commentInput.value = '';
+    // Handle Enter key press in comment inputs
+    document.addEventListener('keypress', function(event) {
+        if (event.target.classList.contains('comment-input') && event.key === 'Enter') {
+            const commentInput = event.target;
+            const announcementId = commentInput.id.replace('comment-input-', '');
+            const comment = commentInput.value.trim();
+            
+            if (comment !== '') {
+                const residentId = '<?php echo $_SESSION['resident_id']; ?>';
+                const residentFullName = '<?php echo $_SESSION['fName'] . ' ' .  $_SESSION['lName'] ?>';
+                
+                // Send the comment to the server
+                sendMessage(JSON.stringify({
+                    type: 'comment',
+                    message: comment,
+                    resident_id: residentId,
+                    resident_fullName: residentFullName,
+                    announcement_id: announcementId,
+                }));
+
+                // Clear the comment input
+                commentInput.value = '';
+            }
         }
     });
-    const likeBtn = document.querySelector('.like-button');
-    likeBtn.addEventListener('click', function() {
-        const residentId = '<?php echo $_SESSION['resident_id']; ?>';
-        const announcementId = this.closest('.card').dataset.announcementId;
-        sendMessage(JSON.stringify({
-            type: 'like',
-            announcement_id: announcementId,
-            resident_id: residentId,
-        }));
-
-    })
     </script>
 
     <!-- Bootstrap JS -->

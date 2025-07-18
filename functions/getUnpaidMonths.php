@@ -1,5 +1,5 @@
 <?php
-session_start();
+// Session is managed by the calling file
 require_once './classes/payments.class.php';
 
 /**

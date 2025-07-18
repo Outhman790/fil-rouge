@@ -56,166 +56,188 @@ if (isset($_SESSION['resident_id'])) :
             </div>
         </div>
     </nav>
-    <div class="container my-4">
-        <div class="glass-container p-4">
-            <div class="welcome-text text-center mb-4">
-                <h1><i class="fas fa-bullhorn mr-3"></i>Announcements</h1>
-                <p class="lead">Stay updated with the latest building news</p>
-            </div>
-        <?php
-            require_once 'classes/admin.class.php';
-            require_once 'classes/user.class.php';
-            $adminObj = new Admin();
-            $allAnnouncements = $adminObj->getAllAnnouncements();
-            $userObj = new User();
-            
-            if (empty($allAnnouncements)) :
-        ?>
-            <div class="card border-0 shadow-sm">
-                <div class="card-body text-center py-5">
-                    <i class="fas fa-bullhorn fa-4x text-muted mb-3"></i>
-                    <h4 class="text-muted">No Announcements Yet</h4>
-                    <p class="text-muted">Check back later for important updates from building management.</p>
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <div class="hero-content">
+                        <h1 class="hero-title">
+                            <i class="fas fa-bullhorn hero-icon"></i>
+                            Community Announcements
+                        </h1>
+                        <p class="hero-subtitle">Stay connected with your building community</p>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="hero-stats">
+                        <div class="stat-item">
+                            <i class="fas fa-newspaper"></i>
+                            <div class="stat-info">
+                                <h3><?php echo count($allAnnouncements ?? []); ?></h3>
+                                <p>Total Announcements</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        <?php 
-            else :
-                foreach ($allAnnouncements as $key => $announce) :
-                    $countLikes = $userObj->countLikes($announce['announcement_id']);
-                    $allComments = $userObj->showComments($announce['announcement_id']);
-        ?>
-            <!-- Modern Announcement Card -->
-            <div class="card announcement-card shadow-lg mb-4" data-announcement-id="<?php echo $announce['announcement_id']; ?>">
-                <!-- Card Header -->
-                <div class="card-header bg-gradient-primary text-white border-0" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <h4 class="card-title mb-1 font-weight-bold">
-                                <i class="fas fa-bullhorn mr-2"></i><?php echo htmlspecialchars($announce['title']) ?>
-                            </h4>
-                            <small class="text-white-50">
-                                <i class="fas fa-calendar-alt mr-1"></i>
-                                <?php echo date('F j, Y \a\t g:i A', strtotime($announce['created_at'])) ?>
-                            </small>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="announcements-wrapper">
+            <?php
+                require_once 'classes/admin.class.php';
+                require_once 'classes/user.class.php';
+                $adminObj = new Admin();
+                $allAnnouncements = $adminObj->getAllAnnouncements();
+                $userObj = new User();
+                
+                if (empty($allAnnouncements)) :
+            ?>
+                <!-- Empty State -->
+                <div class="empty-state-container">
+                    <div class="empty-state-card">
+                        <div class="empty-state-icon">
+                            <i class="fas fa-bullhorn"></i>
                         </div>
-                        <div class="announcement-badge">
-                            <span class="badge badge-light">
-                                <i class="fas fa-eye mr-1"></i>New
+                        <h3 class="empty-state-title">No Announcements Yet</h3>
+                        <p class="empty-state-subtitle">Check back later for important updates from building management.</p>
+                        <div class="empty-state-animation">
+                            <div class="pulse-circle"></div>
+                            <div class="pulse-circle"></div>
+                            <div class="pulse-circle"></div>
+                        </div>
+                    </div>
+                </div>
+            <?php 
+                else :
+                    foreach ($allAnnouncements as $key => $announce) :
+                        $countLikes = $userObj->countLikes($announce['announcement_id']);
+                        $allComments = $userObj->showComments($announce['announcement_id']);
+            ?>
+                <!-- Modern Announcement Card -->
+                <div class="announcement-card-modern" data-announcement-id="<?php echo $announce['announcement_id']; ?>">
+                    <!-- Card Header -->
+                    <div class="card-header-modern">
+                        <div class="announcement-meta">
+                            <div class="announcement-date">
+                                <i class="fas fa-calendar-alt"></i>
+                                <?php echo date('M j, Y', strtotime($announce['created_at'])) ?>
+                            </div>
+                            <div class="announcement-time">
+                                <i class="fas fa-clock"></i>
+                                <?php echo date('g:i A', strtotime($announce['created_at'])) ?>
+                            </div>
+                        </div>
+                        <div class="announcement-badge-modern">
+                            <span class="badge badge-featured">
+                                <i class="fas fa-star"></i>Featured
                             </span>
                         </div>
                     </div>
-                </div>
-                
-                <!-- Card Image -->
-                <div class="position-relative overflow-hidden">
-                    <img src="includes/uploads/announces/<?php echo $announce['image'] ?>" 
-                         class="card-img-top announcement-image" 
-                         alt="<?php echo htmlspecialchars($announce['title']) ?>">
-                    <div class="image-overlay"></div>
-                </div>
-                
-                <!-- Card Body -->
-                <div class="card-body p-4">
-                    <div class="announcement-content">
-                        <p class="card-text text-muted mb-4" style="font-size: 1.1rem; line-height: 1.7;">
-                            <?php echo nl2br(htmlspecialchars($announce['description'])) ?>
-                        </p>
-                    </div>
                     
-                    <!-- Interaction Section -->
-                    <div class="announcement-interactions">
-                        <div class="d-flex justify-content-between align-items-center flex-wrap">
-                            <!-- Like/Unlike Section -->
-                            <div class="like-section d-flex align-items-center mb-3 mb-md-0">
-                                <button class="btn btn-outline-danger btn-sm rounded-pill like-button mr-3" 
-                                        data-announcement-id="<?php echo $announce['announcement_id']; ?>">
-                                    <i class="fas fa-heart mr-1"></i>Like
-                                </button>
-                                <div class="like-stats text-muted small">
-                                    <span class="mr-3">
-                                        <i class="fas fa-heart text-danger mr-1"></i>
-                                        <span class="like-count font-weight-bold" id="like-count-<?php echo $announce['announcement_id']; ?>"><?php echo $countLikes['like_count'] ?></span> likes
-                                    </span>
-                                    <span>
-                                        <i class="fas fa-comment text-primary mr-1"></i>
-                                        <span class="font-weight-bold comment-count" id="comment-count-<?php echo $announce['announcement_id']; ?>"><?php echo count($allComments) ?></span> comments
-                                    </span>
+                    <!-- Card Content -->
+                    <div class="card-content-modern">
+                        <div class="row">
+                            <div class="col-lg-7">
+                                <div class="announcement-text-content">
+                                    <h2 class="announcement-title-modern">
+                                        <?php echo htmlspecialchars($announce['title']) ?>
+                                    </h2>
+                                    <div class="announcement-description">
+                                        <?php echo nl2br(htmlspecialchars($announce['description'])) ?>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-5">
+                                <div class="announcement-image-wrapper">
+                                    <img src="includes/uploads/announces/<?php echo $announce['image'] ?>" 
+                                         class="announcement-image-modern" 
+                                         alt="<?php echo htmlspecialchars($announce['title']) ?>">
+                                    <div class="image-overlay-modern"></div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                
-                <!-- Comments Section -->
-                <div class="card-footer bg-light border-0">
-                    <!-- Add Comment Form -->
-                    <div class="mb-3">
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text bg-white border-right-0">
-                                    <i class="fas fa-comment text-muted"></i>
-                                </span>
+                    
+                    <!-- Card Interactions -->
+                    <div class="card-interactions-modern">
+                        <div class="interaction-stats">
+                            <div class="stat-item">
+                                <button class="interaction-btn like-btn" data-announcement-id="<?php echo $announce['announcement_id']; ?>">
+                                    <i class="fas fa-heart"></i>
+                                    <span class="like-count" id="like-count-<?php echo $announce['announcement_id']; ?>"><?php echo $countLikes['like_count'] ?></span>
+                                </button>
                             </div>
-                            <input type="text" class="form-control border-left-0 comment-input" 
-                                   placeholder="Share your thoughts about this announcement..."
-                                   id="comment-input-<?php echo $announce['announcement_id']; ?>">
-                            <div class="input-group-append">
-                                <button class="btn btn-primary comment-button" type="button"
+                            <div class="stat-item">
+                                <div class="interaction-btn comment-info">
+                                    <i class="fas fa-comment"></i>
+                                    <span class="comment-count" id="comment-count-<?php echo $announce['announcement_id']; ?>"><?php echo count($allComments) ?></span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Comment Input -->
+                        <div class="comment-input-wrapper">
+                            <div class="comment-input-group">
+                                <div class="user-avatar">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <input type="text" 
+                                       class="comment-input-modern" 
+                                       placeholder="Share your thoughts about this announcement..."
+                                       id="comment-input-<?php echo $announce['announcement_id']; ?>">
+                                <button class="comment-submit-btn" 
                                         data-announcement-id="<?php echo $announce['announcement_id']; ?>">
-                                    <i class="fas fa-paper-plane mr-1"></i>Post
+                                    <i class="fas fa-paper-plane"></i>
                                 </button>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- Comments List -->
-                    <div class="comments-section">
+                    <!-- Comments Section -->
+                    <div class="comments-section-modern">
                         <?php if (!empty($allComments)) : ?>
-                            <h6 class="text-muted mb-3">
-                                <i class="fas fa-comments mr-2"></i>Comments (<?php echo count($allComments) ?>)
-                            </h6>
-                            <div class="comments-list" id="comments-list-<?php echo $announce['announcement_id']; ?>">
+                            <div class="comments-header">
+                                <h6><i class="fas fa-comments"></i> Comments (<?php echo count($allComments) ?>)</h6>
+                            </div>
+                            <div class="comments-list-modern" id="comments-list-<?php echo $announce['announcement_id']; ?>">
                                 <?php foreach ($allComments as $comment) : ?>
-                                    <div class="comment-item bg-white rounded p-3 mb-3 shadow-sm">
-                                        <div class="d-flex align-items-start">
-                                            <div class="comment-avatar mr-3">
-                                                <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center" 
-                                                     style="width: 40px; height: 40px;">
-                                                    <i class="fas fa-user text-white"></i>
-                                                </div>
+                                    <div class="comment-item-modern">
+                                        <div class="comment-avatar-modern">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        <div class="comment-content-modern">
+                                            <div class="comment-header-modern">
+                                                <h6 class="comment-author-modern">
+                                                    <?php echo htmlspecialchars($comment['fName'] . ' ' . $comment['lName']) ?>
+                                                </h6>
+                                                <span class="comment-date-modern">
+                                                    <?php echo date('M j, Y \a\t g:i A', strtotime($comment['created_at'])) ?>
+                                                </span>
                                             </div>
-                                            <div class="comment-content flex-grow-1">
-                                                <div class="comment-header d-flex justify-content-between align-items-center mb-2">
-                                                    <h6 class="comment-author mb-0 text-primary font-weight-bold">
-                                                        <?php echo htmlspecialchars($comment['fName'] . ' ' . $comment['lName']) ?>
-                                                    </h6>
-                                                    <small class="comment-date text-muted">
-                                                        <i class="fas fa-clock mr-1"></i>
-                                                        <?php echo date('M j, Y \a\t g:i A', strtotime($comment['created_at'])) ?>
-                                                    </small>
-                                                </div>
-                                                <p class="comment-text mb-0 text-dark">
-                                                    <?php echo nl2br(htmlspecialchars($comment['comment_text'])) ?>
-                                                </p>
-                                            </div>
+                                            <p class="comment-text-modern">
+                                                <?php echo nl2br(htmlspecialchars($comment['comment_text'])) ?>
+                                            </p>
                                         </div>
                                     </div>
                                 <?php endforeach; ?>
                             </div>
                         <?php else : ?>
-                            <div class="text-center py-4">
-                                <i class="fas fa-comment-slash fa-2x text-muted mb-2"></i>
-                                <p class="text-muted mb-0">No comments yet. Be the first to share your thoughts!</p>
+                            <div class="no-comments-state">
+                                <i class="fas fa-comment-slash"></i>
+                                <p>No comments yet. Be the first to share your thoughts!</p>
                             </div>
                         <?php endif; ?>
                     </div>
                 </div>
-            </div>
-        <?php 
-                endforeach;
-            endif;
-        ?>
-
+            <?php 
+                    endforeach;
+                endif;
+            ?>
+        </div>
     </div>
 
     <!-- WebSocket connection -->
@@ -263,29 +285,23 @@ if (isset($_SESSION['resident_id'])) :
 
         // Create new comment element
         const commentElement = document.createElement('div');
-        commentElement.className = 'comment-item bg-white rounded p-3 mb-3 shadow-sm new-comment';
+        commentElement.className = 'comment-item-modern new-comment';
         commentElement.innerHTML = `
-            <div class="d-flex align-items-start">
-                <div class="comment-avatar mr-3">
-                    <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center" 
-                         style="width: 40px; height: 40px;">
-                        <i class="fas fa-user text-white"></i>
-                    </div>
+            <div class="comment-avatar-modern">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="comment-content-modern">
+                <div class="comment-header-modern">
+                    <h6 class="comment-author-modern">
+                        ${residentFullName}
+                    </h6>
+                    <span class="comment-date-modern">
+                        ${formatDate(createdAt)}
+                    </span>
                 </div>
-                <div class="comment-content flex-grow-1">
-                    <div class="comment-header d-flex justify-content-between align-items-center mb-2">
-                        <h6 class="comment-author mb-0 text-primary font-weight-bold">
-                            ${residentFullName}
-                        </h6>
-                        <small class="comment-date text-muted">
-                            <i class="fas fa-clock mr-1"></i>
-                            ${formatDate(createdAt)}
-                        </small>
-                    </div>
-                    <p class="comment-text mb-0 text-dark">
-                        ${comment}
-                    </p>
-                </div>
+                <p class="comment-text-modern">
+                    ${comment}
+                </p>
             </div>
         `;
 
@@ -300,10 +316,13 @@ if (isset($_SESSION['resident_id'])) :
         }
 
         // Show "No comments" message if this is the first comment
-        const noCommentsMessage = commentsList.parentElement.querySelector('.text-center.py-4');
+        const noCommentsMessage = commentsList.parentElement.querySelector('.no-comments-state');
         if (noCommentsMessage) {
             noCommentsMessage.style.display = 'none';
         }
+
+        // Trigger pulse animation on announcement card
+        triggerCardAnimation(announcementId);
 
         // Scroll to new comment
         commentElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -317,6 +336,20 @@ if (isset($_SESSION['resident_id'])) :
         const likeCountElement = document.getElementById(`like-count-${announcementId}`);
         if (likeCountElement) {
             likeCountElement.textContent = countLikes;
+        }
+        
+        // Trigger pulse animation on announcement card
+        triggerCardAnimation(announcementId);
+    }
+
+    // Function to trigger card animation
+    function triggerCardAnimation(announcementId) {
+        const announcementCard = document.querySelector(`[data-announcement-id="${announcementId}"]`);
+        if (announcementCard) {
+            announcementCard.classList.add('new-activity');
+            setTimeout(() => {
+                announcementCard.classList.remove('new-activity');
+            }, 600);
         }
     }
 
@@ -383,8 +416,8 @@ if (isset($_SESSION['resident_id'])) :
     // Event delegation for multiple announcement cards
     document.addEventListener('click', function(event) {
         // Handle comment button clicks
-        if (event.target.classList.contains('comment-button') || event.target.closest('.comment-button')) {
-            const button = event.target.classList.contains('comment-button') ? event.target : event.target.closest('.comment-button');
+        if (event.target.classList.contains('comment-submit-btn') || event.target.closest('.comment-submit-btn')) {
+            const button = event.target.classList.contains('comment-submit-btn') ? event.target : event.target.closest('.comment-submit-btn');
             const announcementId = button.dataset.announcementId;
             const commentInput = document.getElementById(`comment-input-${announcementId}`);
             const comment = commentInput.value.trim();
@@ -408,8 +441,8 @@ if (isset($_SESSION['resident_id'])) :
         }
         
         // Handle like button clicks
-        if (event.target.classList.contains('like-button') || event.target.closest('.like-button')) {
-            const button = event.target.classList.contains('like-button') ? event.target : event.target.closest('.like-button');
+        if (event.target.classList.contains('like-btn') || event.target.closest('.like-btn')) {
+            const button = event.target.classList.contains('like-btn') ? event.target : event.target.closest('.like-btn');
             const announcementId = button.dataset.announcementId;
             const residentId = '<?php echo $_SESSION['resident_id']; ?>';
             
@@ -424,7 +457,7 @@ if (isset($_SESSION['resident_id'])) :
 
     // Handle Enter key press in comment inputs
     document.addEventListener('keypress', function(event) {
-        if (event.target.classList.contains('comment-input') && event.key === 'Enter') {
+        if (event.target.classList.contains('comment-input-modern') && event.key === 'Enter') {
             const commentInput = event.target;
             const announcementId = commentInput.id.replace('comment-input-', '');
             const comment = commentInput.value.trim();

@@ -105,24 +105,36 @@ if (isset($_SESSION['resident_id'])) :
                     $userObj = new User();
                     $allComments = $userObj->showComments($announce['announcement_id']);
                     ?>
-            <div class="card-footer comments-container">
+            <div class="comments-container">
+                <h6 class="mb-3">
+                    <i class="fas fa-comments mr-2"></i>Comments
+                </h6>
                 <?php
-                        foreach ($allComments as $key => $comment) :
+                        if ($allComments) :
+                            foreach ($allComments as $key => $comment) :
                         ?>
-                <div class="d-flex comment-container flex-column flex-sm-row mt-2"
-                    data-created_at="<?php echo $announce['created_at']; ?>">
-                    <div class="comment-author mb-2 mb-sm-3">
-                        <strong><?php echo $comment['fName'] . ' ' . $comment['lName'] ?></strong>
+                <div class="comment-item">
+                    <div class="comment-author">
+                        <i class="fas fa-user mr-1"></i><?php echo $comment['fName'] . ' ' . $comment['lName'] ?>
                     </div>
-                    <div class="flex-grow-1 comment-message ml-sm-3">
+                    <div class="comment-text">
                         <?php echo $comment['comment_text'] ?>
                     </div>
-                    <div class="comment-date small text-muted mt-sm-0">
-                        <?php echo $comment['created_at'] ?>
+                    <div class="comment-date">
+                        <i class="fas fa-clock mr-1"></i><?php echo date('M j, Y \a\t g:i A', strtotime($comment['created_at'])) ?>
                     </div>
                 </div>
-                <hr style="margin: .25rem .5rem;">
-                <?php endforeach; ?>
+                <?php
+                            endforeach;
+                        else:
+                    ?>
+                <div class="text-center text-muted py-3">
+                    <i class="fas fa-comment-slash fa-2x mb-2"></i>
+                    <p class="mb-0">No comments yet. Be the first to share your thoughts!</p>
+                </div>
+                <?php
+                        endif;
+                    ?>
             </div>
         </div>
         <?php endforeach; ?>

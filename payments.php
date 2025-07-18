@@ -84,16 +84,83 @@ if (!isset($_SESSION['resident_id']) || !isset($_SESSION['status']) || $_SESSION
     // Get user payments for display
     $paymentsObj = new User();
     $payments = $paymentsObj->getUserPayments($_SESSION['resident_id']);
-
+    
+    // Create comprehensive payment data
+    $allMonths = [];
+    $paidMonths = [];
+    $monthlyFee = 300;
+    
+    // Get all months from registration to current
+    $registrationYear = (int)$joinedIn['year'];
+    $registrationMonth = (int)$joinedIn['month'];
+    $currentYear = (int)date('Y');
+    $currentMonth = (int)date('n');
+    
+    // Create paid months array
+    foreach ($payments as $payment) {
+        $paidMonths[] = [
+            'month' => (int)$payment['payment_month'],
+            'year' => (int)$payment['payment_year'],
+            'transaction_id' => $payment['transaction_id'],
+            'status' => 'paid'
+        ];
+    }
+    
+    // Generate all months from registration to current
+    for ($year = $registrationYear; $year <= $currentYear; $year++) {
+        $startMonth = ($year == $registrationYear) ? $registrationMonth + 1 : 1;
+        $endMonth = ($year == $currentYear) ? $currentMonth : 12;
+        
+        for ($month = $startMonth; $month <= $endMonth; $month++) {
+            $isPaid = false;
+            $transactionId = '';
+            
+            foreach ($paidMonths as $paidMonth) {
+                if ($paidMonth['month'] == $month && $paidMonth['year'] == $year) {
+                    $isPaid = true;
+                    $transactionId = $paidMonth['transaction_id'];
+                    break;
+                }
+            }
+            
+            $allMonths[] = [
+                'month' => $month,
+                'year' => $year,
+                'month_name' => date('F', mktime(0, 0, 0, $month, 1)),
+                'status' => $isPaid ? 'paid' : 'unpaid',
+                'transaction_id' => $transactionId,
+                'amount' => $monthlyFee,
+                'due_date' => date('Y-m-d', mktime(0, 0, 0, $month, 5, $year)), // 5th of each month
+                'is_overdue' => !$isPaid && (($year < $currentYear) || ($year == $currentYear && $month < $currentMonth))
+            ];
+        }
+    }
+    
+    // Calculate comprehensive stats
+    $totalUnpaidMonths = count($unpaidMonths);
+    $totalAmountToPay = $totalUnpaidMonths * $monthlyFee;
+    $totalPaidAmount = count($payments) * $monthlyFee;
+    $overdueMonths = array_filter($allMonths, function($month) {
+        return $month['is_overdue'];
+    });
+    $overdueAmount = count($overdueMonths) * $monthlyFee;
+    
+    // Payment completion percentage
+    $totalRequiredMonths = count($allMonths);
+    $completionPercentage = $totalRequiredMonths > 0 ? (count($payments) / $totalRequiredMonths) * 100 : 100;
+    
+    // Get recent payment trend (last 6 months)
+    $recentPayments = array_slice(array_reverse($payments), 0, 6);
+    
     // Debug information (can be removed in production)
     $debugInfo = [
         'resident_id' => $_SESSION['resident_id'],
-        'joined_in' => $joinedIn,
-        'latest_payment' => $latestPayment,
-        'unpaid_months' => $unpaidMonths,
-        'next_payment_month' => $nextPaymentMonth
+        'total_months' => count($allMonths),
+        'paid_months' => count($payments),
+        'unpaid_months' => $totalUnpaidMonths,
+        'completion_percentage' => round($completionPercentage, 1)
     ];
-    echo "<script>console.log('Payment Debug Info:', " . json_encode($debugInfo) . ");</script>";
+    echo "<script>console.log('Enhanced Payment Debug Info:', " . json_encode($debugInfo) . ");</script>";
     ?>
     
     <div class="container my-4">
@@ -103,33 +170,69 @@ if (!isset($_SESSION['resident_id']) || !isset($_SESSION['status']) || $_SESSION
                 <p class="lead">Welcome back, <?php echo $_SESSION['fName'] . ' ' . $_SESSION['lName']; ?>!</p>
             </div>
             
+            <!-- Enhanced Statistics Dashboard -->
             <div class="row mb-4">
-                <div class="col-md-4">
-                    <div class="card stat-card border-0 h-100">
-                        <div class="card-body text-center">
-                            <div class="display-4 text-primary font-weight-bold"><?php echo count($payments); ?></div>
-                            <p class="text-muted mb-0">Total Payments</p>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="card stat-card border-0 h-100 bg-gradient-success">
+                        <div class="card-body text-center text-white">
+                            <i class="fas fa-check-circle fa-2x mb-2"></i>
+                            <div class="display-4 font-weight-bold"><?php echo count($payments); ?></div>
+                            <p class="mb-0">Paid Months</p>
+                            <small class="text-white-50"><?php echo number_format($totalPaidAmount); ?> MAD</small>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <div class="card stat-card border-0 h-100">
-                        <div class="card-body text-center">
-                            <div class="display-4 text-<?php echo count($unpaidMonths) > 0 ? 'danger' : 'success'; ?> font-weight-bold"><?php echo count($unpaidMonths); ?></div>
-                            <p class="text-muted mb-0">Unpaid Months</p>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="card stat-card border-0 h-100 bg-gradient-danger">
+                        <div class="card-body text-center text-white">
+                            <i class="fas fa-exclamation-triangle fa-2x mb-2"></i>
+                            <div class="display-4 font-weight-bold"><?php echo $totalUnpaidMonths; ?></div>
+                            <p class="mb-0">Unpaid Months</p>
+                            <small class="text-white-50"><?php echo number_format($totalAmountToPay); ?> MAD</small>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <div class="card stat-card border-0 h-100">
-                        <div class="card-body text-center">
-                            <div class="display-4 text-info font-weight-bold">300</div>
-                            <p class="text-muted mb-0">Monthly Fee (MAD)</p>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="card stat-card border-0 h-100 bg-gradient-warning">
+                        <div class="card-body text-center text-white">
+                            <i class="fas fa-clock fa-2x mb-2"></i>
+                            <div class="display-4 font-weight-bold"><?php echo count($overdueMonths); ?></div>
+                            <p class="mb-0">Overdue Months</p>
+                            <small class="text-white-50"><?php echo number_format($overdueAmount); ?> MAD</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="card stat-card border-0 h-100 bg-gradient-info">
+                        <div class="card-body text-center text-white">
+                            <i class="fas fa-percentage fa-2x mb-2"></i>
+                            <div class="display-4 font-weight-bold"><?php echo round($completionPercentage); ?>%</div>
+                            <p class="mb-0">Completion Rate</p>
+                            <small class="text-white-50">Payment Progress</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Payment Progress Bar -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="mb-0">Payment Progress</h6>
+                        <small class="text-muted"><?php echo count($payments); ?> of <?php echo $totalRequiredMonths; ?> months paid</small>
+                    </div>
+                    <div class="progress" style="height: 20px;">
+                        <div class="progress-bar bg-gradient-primary" role="progressbar" 
+                             style="width: <?php echo $completionPercentage; ?>%" 
+                             aria-valuenow="<?php echo $completionPercentage; ?>" 
+                             aria-valuemin="0" aria-valuemax="100">
+                            <?php echo round($completionPercentage, 1); ?>%
                         </div>
                     </div>
                 </div>
             </div>
 
+            <!-- Enhanced Payment Actions -->
             <?php if (!empty($unpaidMonths)) : ?>
                 <div class="card payment-status-card border-0 text-center p-4 mb-4">
                     <i class="fas fa-exclamation-triangle payment-icon mb-3"></i>
@@ -138,74 +241,142 @@ if (!isset($_SESSION['resident_id']) || !isset($_SESSION['status']) || $_SESSION
                     <span class="badge month-badge p-2 mb-3">
                         Next Payment: Month <?php echo $nextPaymentMonth ?>
                     </span>
-                    <div class="payment-amount text-white">300 MAD</div>
-                    <a href="pay.php" class="btn btn-pay btn-lg px-5">
-                        <i class="fas fa-credit-card mr-2"></i>Pay Now
-                    </a>
+                    <div class="payment-amount text-white"><?php echo number_format($totalAmountToPay); ?> MAD</div>
+                    <div class="mt-3">
+                        <a href="pay.php" class="btn btn-pay btn-lg px-4 mr-3">
+                            <i class="fas fa-credit-card mr-2"></i>Pay Next Month
+                        </a>
+                        <?php if (count($unpaidMonths) > 1) : ?>
+                            <a href="pay.php?pay_all=1" class="btn btn-success btn-lg px-4">
+                                <i class="fas fa-credit-card mr-2"></i>Pay All (<?php echo count($unpaidMonths) ?> months)
+                            </a>
+                        <?php endif; ?>
+                    </div>
+                    <small class="text-white-50 mt-2 d-block">
+                        <?php if (count($overdueMonths) > 0) : ?>
+                            <i class="fas fa-exclamation-circle mr-1"></i>
+                            <?php echo count($overdueMonths) ?> month<?php echo count($overdueMonths) > 1 ? 's' : '' ?> overdue
+                        <?php endif; ?>
+                    </small>
                 </div>
             <?php else : ?>
                 <div class="card payment-status-card success border-0 text-center p-4 mb-4">
                     <i class="fas fa-check-circle payment-icon mb-3"></i>
                     <h3 class="text-white">All Payments Complete!</h3>
                     <p class="lead text-white">You're all caught up with your payments</p>
-                    <div class="payment-amount text-white">✓ Paid</div>
+                    <div class="payment-amount text-white">✓ Up to Date</div>
+                    <small class="text-white-50 mt-2 d-block">
+                        Next payment due: <?php echo date('F Y', mktime(0, 0, 0, $currentMonth + 1, 1, $currentYear)); ?>
+                    </small>
                 </div>
             <?php endif; ?>
+            <!-- Enhanced Payment History Table -->
             <div class="card table-modern border-0">
-                <div class="card-header text-white" style="background: linear-gradient(135deg, #667eea, #764ba2);">
-                    <h4 class="mb-0">
-                        <i class="fas fa-history mr-2"></i>Payment History
-                    </h4>
+                <div class="card-header table-header-solid">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <h4 class="mb-0">
+                                <i class="fas fa-history mr-2"></i>Complete Payment History
+                            </h4>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <select class="form-control form-control-sm" id="statusFilter">
+                                        <option value="all">All Status</option>
+                                        <option value="paid">Paid Only</option>
+                                        <option value="unpaid">Unpaid Only</option>
+                                        <option value="overdue">Overdue Only</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="month" class="form-control form-control-sm" id="monthFilter" 
+                                           placeholder="Filter by month">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <?php if (!empty($payments)) : ?>
-                    <div class="card-body p-0">
-                        <table class="table table-hover mb-0">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0" id="paymentTable">
                             <thead>
-                                <tr style="background: linear-gradient(135deg, #667eea, #764ba2); color: white;">
-                                    <th class="border-0"><i class="fas fa-receipt mr-2"></i>Transaction ID</th>
-                                    <th class="border-0"><i class="fas fa-calendar mr-2"></i>Payment Date</th>
+                                <tr class="table-header-solid">
+                                    <th class="border-0"><i class="fas fa-calendar mr-2"></i>Month/Year</th>
+                                    <th class="border-0"><i class="fas fa-info-circle mr-2"></i>Status</th>
                                     <th class="border-0"><i class="fas fa-money-bill mr-2"></i>Amount</th>
-                                    <th class="border-0"><i class="fas fa-check-circle mr-2"></i>Status</th>
+                                    <th class="border-0"><i class="fas fa-clock mr-2"></i>Due Date</th>
+                                    <th class="border-0"><i class="fas fa-receipt mr-2"></i>Transaction ID</th>
+                                    <th class="border-0"><i class="fas fa-cog mr-2"></i>Actions</th>
                                 </tr>
                             </thead>
-                        <tbody>
-                            <?php foreach ($payments as $payment) : ?>
-                                <tr>
-                                    <td>
-                                        <span class="badge badge-light transaction-id">
-                                            <?php echo substr($payment['transaction_id'], 0, 20) . '...'; ?>
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span class="payment-date">
-                                            <?php 
-                                            $monthNames = [
-                                                1 => 'Jan', 2 => 'Feb', 3 => 'Mar', 4 => 'Apr',
-                                                5 => 'May', 6 => 'Jun', 7 => 'Jul', 8 => 'Aug',
-                                                9 => 'Sep', 10 => 'Oct', 11 => 'Nov', 12 => 'Dec'
-                                            ];
-                                            echo $monthNames[$payment['payment_month']] . ' ' . $payment['payment_year'];
-                                            ?>
-                                        </span>
-                                    </td>
-                                    <td><strong>300 MAD</strong></td>
-                                    <td>
-                                        <span class="badge badge-success">
-                                            <i class="fas fa-check mr-1"></i>Paid
-                                        </span>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
+                            <tbody>
+                                <?php 
+                                // Sort months by year and month (most recent first)
+                                usort($allMonths, function($a, $b) {
+                                    if ($a['year'] == $b['year']) {
+                                        return $b['month'] - $a['month'];
+                                    }
+                                    return $b['year'] - $a['year'];
+                                });
+                                
+                                foreach ($allMonths as $month) : 
+                                    $statusClass = $month['status'] == 'paid' ? 'success' : 
+                                                  ($month['is_overdue'] ? 'danger' : 'warning');
+                                    $statusText = $month['status'] == 'paid' ? 'Paid' : 
+                                                 ($month['is_overdue'] ? 'Overdue' : 'Pending');
+                                    $statusIcon = $month['status'] == 'paid' ? 'check' : 
+                                                 ($month['is_overdue'] ? 'exclamation-triangle' : 'clock');
+                                ?>
+                                    <tr data-status="<?php echo $month['status']; ?>" 
+                                        data-month="<?php echo $month['year'] . '-' . str_pad($month['month'], 2, '0', STR_PAD_LEFT); ?>" 
+                                        data-overdue="<?php echo $month['is_overdue'] ? 'true' : 'false'; ?>">
+                                        <td>
+                                            <strong><?php echo $month['month_name'] . ' ' . $month['year']; ?></strong>
+                                            <?php if ($month['is_overdue']) : ?>
+                                                <br><small class="text-danger"><i class="fas fa-exclamation-circle mr-1"></i>Overdue</small>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td>
+                                            <span class="badge badge-<?php echo $statusClass; ?>">
+                                                <i class="fas fa-<?php echo $statusIcon; ?> mr-1"></i><?php echo $statusText; ?>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <strong><?php echo number_format($month['amount']); ?> MAD</strong>
+                                        </td>
+                                        <td>
+                                            <small class="text-muted">
+                                                <?php echo date('M j, Y', strtotime($month['due_date'])); ?>
+                                            </small>
+                                        </td>
+                                        <td>
+                                            <?php if ($month['transaction_id']) : ?>
+                                                <span class="badge badge-light transaction-id">
+                                                    <?php echo substr($month['transaction_id'], 0, 15) . '...'; ?>
+                                                </span>
+                                            <?php else : ?>
+                                                <span class="text-muted">-</span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td>
+                                            <?php if ($month['status'] == 'unpaid') : ?>
+                                                <a href="pay.php?month=<?php echo $month['month']; ?>&year=<?php echo $month['year']; ?>" 
+                                                   class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-credit-card mr-1"></i>Pay
+                                                </a>
+                                            <?php else : ?>
+                                                <span class="text-success">
+                                                    <i class="fas fa-check-circle mr-1"></i>Completed
+                                                </span>
+                                            <?php endif; ?>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
                         </table>
                     </div>
-                <?php else : ?>
-                    <div class="card-body text-center py-5">
-                        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
-                        <h4 class="text-muted">No Payment History</h4>
-                        <p class="text-muted">You haven't made any payments yet.</p>
-                    </div>
-                <?php endif; ?>
+                </div>
             </div>
         </div>
     </div>
@@ -215,7 +386,7 @@ if (!isset($_SESSION['resident_id']) || !isset($_SESSION['status']) || $_SESSION
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     
-    <!-- Custom JavaScript for animations -->
+    <!-- Enhanced JavaScript for advanced features -->
     <script>
         $(document).ready(function() {
             // Animate payment cards on load
@@ -223,6 +394,50 @@ if (!isset($_SESSION['resident_id']) || !isset($_SESSION['status']) || $_SESSION
             $('.stat-card').each(function(index) {
                 $(this).delay(index * 200).fadeIn(500);
             });
+            
+            // Enhanced table filtering
+            $('#statusFilter').on('change', function() {
+                var filterValue = $(this).val();
+                filterTable(filterValue, $('#monthFilter').val());
+            });
+            
+            $('#monthFilter').on('change', function() {
+                var filterValue = $(this).val();
+                filterTable($('#statusFilter').val(), filterValue);
+            });
+            
+            function filterTable(statusFilter, monthFilter) {
+                $('#paymentTable tbody tr').each(function() {
+                    var row = $(this);
+                    var status = row.data('status');
+                    var month = row.data('month');
+                    var isOverdue = row.data('overdue');
+                    
+                    var showRow = true;
+                    
+                    // Status filter
+                    if (statusFilter !== 'all') {
+                        if (statusFilter === 'paid' && status !== 'paid') {
+                            showRow = false;
+                        } else if (statusFilter === 'unpaid' && status !== 'unpaid') {
+                            showRow = false;
+                        } else if (statusFilter === 'overdue' && !isOverdue) {
+                            showRow = false;
+                        }
+                    }
+                    
+                    // Month filter
+                    if (monthFilter && month !== monthFilter) {
+                        showRow = false;
+                    }
+                    
+                    if (showRow) {
+                        row.show();
+                    } else {
+                        row.hide();
+                    }
+                });
+            }
             
             // Add hover effects to table rows
             $('.table tbody tr').hover(
@@ -235,9 +450,18 @@ if (!isset($_SESSION['resident_id']) || !isset($_SESSION['status']) || $_SESSION
             );
             
             // Smooth scroll for pay button
-            $('.pay-button').click(function(e) {
+            $('.btn-pay').click(function(e) {
                 $(this).addClass('animate__animated animate__pulse');
             });
+            
+            // Add tooltips to overdue items
+            $('[data-toggle="tooltip"]').tooltip();
+            
+            // Auto-refresh payment status every 5 minutes
+            setInterval(function() {
+                // You can add AJAX call here to refresh payment status
+                console.log('Checking for payment updates...');
+            }, 300000);
         });
     </script>
 </body>

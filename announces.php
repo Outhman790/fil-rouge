@@ -68,77 +68,153 @@ if (isset($_SESSION['resident_id'])) :
             $adminObj = new Admin();
             $allAnnouncements = $adminObj->getAllAnnouncements();
             $userObj = new User();
-            foreach ($allAnnouncements as $key => $announce) :
-                $countLikes = $userObj->countLikes($announce['announcement_id']);
-            ?>
-        <!-- Example Announcement Card -->
-        <div class="card mb-3" data-announcement-id="<?php echo $announce['announcement_id']; ?>">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="card-title"><?php echo $announce['title'] ?></h5>
-                <small class="text-muted d-block"
-                    style="margin-bottom:0.75rem;"><?php echo $announce['created_at'] ?></small>
+            
+            if (empty($allAnnouncements)) :
+        ?>
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-bullhorn fa-4x text-muted mb-3"></i>
+                    <h4 class="text-muted">No Announcements Yet</h4>
+                    <p class="text-muted">Check back later for important updates from building management.</p>
+                </div>
             </div>
-            <div class="text-center">
-                <img src="includes/uploads/announces/<?php echo $announce['image'] ?>"
-                    class="card-img-top img-thumbnail" alt="Announcement Image" style="width: 20rem;">
-            </div>
-            <div class="card-body">
-                <p class="card-text text-justify"><?php echo $announce['description'] ?></p>
-                <div class="card-footer d-flex justify-content-between align-items-center mb-sm-2">
-                    <div class="d-flex flex-row  justify-content-start align-items-center mr-2">
-                        <button class="btn btn-primary btn-sm mr-1 like-button">Like</button>
-                        <button class="btn btn-primary btn-sm dislike-button">Unlike</button>
-                        <span class="ml-2 text-muted">Likes: <span
-                                class="like-count"><?php echo $countLikes['like_count'] ?></span></span>
-                        <span class="ml-2 text-muted">Dislikes: <span class="dislike-count">1</span></span>
-                    </div>
-                    <div class="input-group">
-                        <input type="text" class="form-control comment-input" placeholder="Add a comment...">
-                        <div class="input-group-append">
-                            <button class="btn btn-primary comment-button" type="button">Comment</button>
+        <?php 
+            else :
+                foreach ($allAnnouncements as $key => $announce) :
+                    $countLikes = $userObj->countLikes($announce['announcement_id']);
+                    $allComments = $userObj->showComments($announce['announcement_id']);
+        ?>
+            <!-- Modern Announcement Card -->
+            <div class="card announcement-card shadow-lg mb-4" data-announcement-id="<?php echo $announce['announcement_id']; ?>">
+                <!-- Card Header -->
+                <div class="card-header bg-gradient-primary text-white border-0" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h4 class="card-title mb-1 font-weight-bold">
+                                <i class="fas fa-bullhorn mr-2"></i><?php echo htmlspecialchars($announce['title']) ?>
+                            </h4>
+                            <small class="text-white-50">
+                                <i class="fas fa-calendar-alt mr-1"></i>
+                                <?php echo date('F j, Y \a\t g:i A', strtotime($announce['created_at'])) ?>
+                            </small>
+                        </div>
+                        <div class="announcement-badge">
+                            <span class="badge badge-light">
+                                <i class="fas fa-eye mr-1"></i>New
+                            </span>
                         </div>
                     </div>
                 </div>
-            </div>
-            <?php
-                    require_once 'classes/user.class.php';
-                    $userObj = new User();
-                    $allComments = $userObj->showComments($announce['announcement_id']);
-                    ?>
-            <div class="comments-container">
-                <h6 class="mb-3">
-                    <i class="fas fa-comments mr-2"></i>Comments
-                </h6>
-                <?php
-                        if ($allComments) :
-                            foreach ($allComments as $key => $comment) :
-                        ?>
-                <div class="comment-item">
-                    <div class="comment-author">
-                        <i class="fas fa-user mr-1"></i><?php echo $comment['fName'] . ' ' . $comment['lName'] ?>
+                
+                <!-- Card Image -->
+                <div class="position-relative overflow-hidden">
+                    <img src="includes/uploads/announces/<?php echo $announce['image'] ?>" 
+                         class="card-img-top announcement-image" 
+                         alt="<?php echo htmlspecialchars($announce['title']) ?>">
+                    <div class="image-overlay"></div>
+                </div>
+                
+                <!-- Card Body -->
+                <div class="card-body p-4">
+                    <div class="announcement-content">
+                        <p class="card-text text-muted mb-4" style="font-size: 1.1rem; line-height: 1.7;">
+                            <?php echo nl2br(htmlspecialchars($announce['description'])) ?>
+                        </p>
                     </div>
-                    <div class="comment-text">
-                        <?php echo $comment['comment_text'] ?>
-                    </div>
-                    <div class="comment-date">
-                        <i class="fas fa-clock mr-1"></i><?php echo date('M j, Y \a\t g:i A', strtotime($comment['created_at'])) ?>
+                    
+                    <!-- Interaction Section -->
+                    <div class="announcement-interactions">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap">
+                            <!-- Like/Unlike Section -->
+                            <div class="like-section d-flex align-items-center mb-3 mb-md-0">
+                                <button class="btn btn-outline-danger btn-sm rounded-pill like-button mr-2">
+                                    <i class="fas fa-heart mr-1"></i>Like
+                                </button>
+                                <button class="btn btn-outline-info btn-sm rounded-pill dislike-button mr-3">
+                                    <i class="fas fa-heart-broken mr-1"></i>Unlike
+                                </button>
+                                <div class="like-stats text-muted small">
+                                    <span class="mr-3">
+                                        <i class="fas fa-heart text-danger mr-1"></i>
+                                        <span class="like-count font-weight-bold"><?php echo $countLikes['like_count'] ?></span> likes
+                                    </span>
+                                    <span>
+                                        <i class="fas fa-comment text-primary mr-1"></i>
+                                        <span class="font-weight-bold"><?php echo count($allComments) ?></span> comments
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <?php
-                            endforeach;
-                        else:
-                    ?>
-                <div class="text-center text-muted py-3">
-                    <i class="fas fa-comment-slash fa-2x mb-2"></i>
-                    <p class="mb-0">No comments yet. Be the first to share your thoughts!</p>
+                
+                <!-- Comments Section -->
+                <div class="card-footer bg-light border-0">
+                    <!-- Add Comment Form -->
+                    <div class="mb-3">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-white border-right-0">
+                                    <i class="fas fa-comment text-muted"></i>
+                                </span>
+                            </div>
+                            <input type="text" class="form-control border-left-0 comment-input" 
+                                   placeholder="Share your thoughts about this announcement...">
+                            <div class="input-group-append">
+                                <button class="btn btn-primary comment-button" type="button">
+                                    <i class="fas fa-paper-plane mr-1"></i>Post
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Comments List -->
+                    <div class="comments-section">
+                        <?php if (!empty($allComments)) : ?>
+                            <h6 class="text-muted mb-3">
+                                <i class="fas fa-comments mr-2"></i>Comments (<?php echo count($allComments) ?>)
+                            </h6>
+                            <div class="comments-list">
+                                <?php foreach ($allComments as $comment) : ?>
+                                    <div class="comment-item bg-white rounded p-3 mb-3 shadow-sm">
+                                        <div class="d-flex align-items-start">
+                                            <div class="comment-avatar mr-3">
+                                                <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center" 
+                                                     style="width: 40px; height: 40px;">
+                                                    <i class="fas fa-user text-white"></i>
+                                                </div>
+                                            </div>
+                                            <div class="comment-content flex-grow-1">
+                                                <div class="comment-header d-flex justify-content-between align-items-center mb-2">
+                                                    <h6 class="comment-author mb-0 text-primary font-weight-bold">
+                                                        <?php echo htmlspecialchars($comment['fName'] . ' ' . $comment['lName']) ?>
+                                                    </h6>
+                                                    <small class="comment-date text-muted">
+                                                        <i class="fas fa-clock mr-1"></i>
+                                                        <?php echo date('M j, Y \a\t g:i A', strtotime($comment['created_at'])) ?>
+                                                    </small>
+                                                </div>
+                                                <p class="comment-text mb-0 text-dark">
+                                                    <?php echo nl2br(htmlspecialchars($comment['comment_text'])) ?>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php else : ?>
+                            <div class="text-center py-4">
+                                <i class="fas fa-comment-slash fa-2x text-muted mb-2"></i>
+                                <p class="text-muted mb-0">No comments yet. Be the first to share your thoughts!</p>
+                            </div>
+                        <?php endif; ?>
+                    </div>
                 </div>
-                <?php
-                        endif;
-                    ?>
             </div>
-        </div>
-        <?php endforeach; ?>
-        <!-- End of Example Announcement Card -->
+        <?php 
+                endforeach;
+            endif;
+        ?>
 
     </div>
 

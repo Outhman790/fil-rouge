@@ -154,9 +154,15 @@ if (isset($_SESSION['resident_id'])) :
                             <div class="col-lg-5">
                                 <div class="announcement-image-wrapper">
                                     <img src="includes/uploads/announces/<?php echo $announce['image'] ?>" 
-                                         class="announcement-image-modern" 
-                                         alt="<?php echo htmlspecialchars($announce['title']) ?>">
+                                         class="announcement-image-modern image-clickable" 
+                                         alt="<?php echo htmlspecialchars($announce['title']) ?>"
+                                         data-image-src="includes/uploads/announces/<?php echo $announce['image'] ?>"
+                                         data-image-title="<?php echo htmlspecialchars($announce['title']) ?>"
+                                         style="cursor: pointer;">
                                     <div class="image-overlay-modern"></div>
+                                    <div class="image-zoom-icon">
+                                        <i class="fas fa-search-plus"></i>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -480,7 +486,105 @@ if (isset($_SESSION['resident_id'])) :
             }
         }
     });
+
+    // Image Modal Functionality
+    document.addEventListener('click', function(event) {
+        console.log('Click detected on:', event.target);
+        
+        if (event.target.classList.contains('image-clickable')) {
+            event.preventDefault();
+            console.log('Image clicked!');
+            
+            const imageSrc = event.target.getAttribute('data-image-src');
+            const imageTitle = event.target.getAttribute('data-image-title');
+            
+            console.log('Image src:', imageSrc);
+            console.log('Image title:', imageTitle);
+            
+            // Update modal content
+            document.getElementById('modalImage').src = imageSrc;
+            document.getElementById('modalImage').alt = imageTitle;
+            document.getElementById('imageModalLabel').textContent = imageTitle;
+            
+            // Show modal using Bootstrap 4 syntax
+            $('#imageModal').modal('show');
+        }
+    });
+
+    // Alternative method - direct click handler
+    $(document).ready(function() {
+        $('.image-clickable').click(function(e) {
+            e.preventDefault();
+            console.log('Image clicked via jQuery!');
+            
+            const imageSrc = $(this).attr('data-image-src');
+            const imageTitle = $(this).attr('data-image-title');
+            
+            console.log('jQuery - Image src:', imageSrc);
+            console.log('jQuery - Image title:', imageTitle);
+            
+            // Update modal content
+            $('#modalImage').attr('src', imageSrc);
+            $('#modalImage').attr('alt', imageTitle);
+            $('#imageModalLabel').text(imageTitle);
+            
+            // Show modal
+            $('#imageModal').modal('show');
+        });
+
+        // Also handle clicks on image wrapper and overlay
+        $('.announcement-image-wrapper').click(function(e) {
+            e.preventDefault();
+            console.log('Image wrapper clicked!');
+            
+            const img = $(this).find('.image-clickable');
+            const imageSrc = img.attr('data-image-src');
+            const imageTitle = img.attr('data-image-title');
+            
+            console.log('Wrapper - Image src:', imageSrc);
+            console.log('Wrapper - Image title:', imageTitle);
+            
+            // Update modal content
+            $('#modalImage').attr('src', imageSrc);
+            $('#modalImage').attr('alt', imageTitle);
+            $('#imageModalLabel').text(imageTitle);
+            
+            // Show modal
+            $('#imageModal').modal('show');
+        });
+    });
+
+    // Handle modal close with Escape key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            $('#imageModal').modal('hide');
+        }
+    });
+
+    // Close modal when clicking outside the image
+    $('#imageModal').on('click', function(event) {
+        if (event.target === this) {
+            $(this).modal('hide');
+        }
+    });
     </script>
+
+    <!-- Image Modal -->
+    <div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 90vw; width: 90vw;">
+            <div class="modal-content image-modal-content">
+                <div class="modal-header image-modal-header">
+                    <h5 class="modal-title" id="imageModalLabel">Announcement Image</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body image-modal-body">
+                    <img id="modalImage" src="" alt="" class="img-fluid modal-image">
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Bootstrap JS -->
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

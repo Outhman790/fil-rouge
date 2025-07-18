@@ -295,17 +295,48 @@ if (isset($_SESSION['resident_id'])) :
 
     socket.onclose = function(event) {
         console.log('WebSocket connection closed.');
+        // Show user-friendly message
+        showConnectionStatus('WebSocket connection closed. Real-time features may not work.', 'warning');
     };
 
     socket.onerror = function(error) {
         console.error('WebSocket error:', error);
+        // Show user-friendly message
+        showConnectionStatus('WebSocket server is not running. Real-time features are disabled.', 'error');
     };
+
+    // Function to show connection status to user
+    function showConnectionStatus(message, type) {
+        const statusDiv = document.getElementById('websocket-status') || createStatusDiv();
+        statusDiv.textContent = message;
+        statusDiv.className = `alert alert-${type === 'error' ? 'danger' : 'warning'} mt-2`;
+        statusDiv.style.display = 'block';
+        
+        // Hide after 5 seconds for non-error messages
+        if (type !== 'error') {
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, 5000);
+        }
+    }
+
+    // Create status div if it doesn't exist
+    function createStatusDiv() {
+        const statusDiv = document.createElement('div');
+        statusDiv.id = 'websocket-status';
+        statusDiv.style.display = 'none';
+        document.querySelector('.container').insertBefore(statusDiv, document.querySelector('.container').firstChild);
+        return statusDiv;
+    }
 
     // Function to send a message to the server
     function sendMessage(message) {
         if (socket.readyState === WebSocket.OPEN) {
             console.log(message);
             socket.send(message);
+        } else {
+            console.warn('WebSocket is not connected. Message not sent:', message);
+            showConnectionStatus('Cannot send message. WebSocket server is not running.', 'error');
         }
     }
 

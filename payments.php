@@ -50,67 +50,38 @@ require 'classes/user.class.php';
     $joinedIn = extractMonthYear($resident['joinedIn']);
 
     $currentYear = intval(date("Y"));
-    // If resident didn't pay any month he'll pay from the month he joined until now
-    if ($countPayments == 0) :
-        if (getUnpaidYears($currentYear, $joinedIn['month'], $joinedIn['year']) == NULL) echo "NULL";
-        $unpaidMonths = getUnpaidMonthsOfAllUnpaidYears($joinedIn['month'], getUnpaidYears($currentYear, $joinedIn['month'], $joinedIn['year']), true);
-        $a = json_encode($unpaidMonths);
-        echo "<script>console.log(JSON.parse('$a'));</script>";
-        $b = json_encode($_SESSION['resident_id']);
-        echo "<script>console.log(JSON.parse('$b'));</script>";
-    ?>
+    $currentMonth = intval(date("n"));
+    
+    // Calculate unpaid months using the new logic
+    $latestPaymentObj = new User();
+    $latestPayment = ($countPayments == 0) ? null : $latestPaymentObj->getLatestPayment($_SESSION['resident_id']);
+    
+    // Use the new calculateUnpaidMonths function
+    $unpaidMonths = calculateUnpaidMonths($_SESSION['resident_id'], $joinedIn, $latestPayment);
+    $nextPaymentMonth = getNextPaymentMonth($unpaidMonths);
+    
+    // Debug information (can be removed in production)
+    $debugInfo = [
+        'resident_id' => $_SESSION['resident_id'],
+        'joined_in' => $joinedIn,
+        'latest_payment' => $latestPayment,
+        'unpaid_months' => $unpaidMonths,
+        'next_payment_month' => $nextPaymentMonth
+    ];
+    echo "<script>console.log('Payment Debug Info:', " . json_encode($debugInfo) . ");</script>";
+    
+    if (!empty($unpaidMonths)) : ?>
         <div class="alert alert-danger text-center" role="alert">
-            You didn't pay
-            <?php echo count($unpaidMonths) ?>
-            months.
+            You didn't pay <?php echo count($unpaidMonths) ?> month<?php echo count($unpaidMonths) > 1 ? 's' : '' ?>.
         </div>
-        <!-- Tell the user to pay from the first month he didn't pay -->
-        <a href="pay.php" class="btn btn-primary btn-block mx-auto mt-3" style="width: 200px;">Pay Month
-            <?php if (count($unpaidMonths) > 12) echo $unpaidMonths[0];
-            else echo $unpaidMonths[0]  ?></a>
-        <?php
-    else :
-        $latestPaymentObj = new User();
-        $latestPayment = $latestPaymentObj->getLatestPayment($_SESSION['resident_id']);
-        $currentMonth = (int)date('n');
-        // if there's two unpaid years ( current year and previous one )
-        if ($currentYear - $latestPayment['payment_year']  == 1) {
-
-            $UnpaidYears = getUnpaidYears($currentYear, $joinedIn['month'], $latestPayment['payment_year']);
-        }
-        // ======== !!!!!!!! =========
-        elseif ($currentYear - $latestPayment['payment_year']  == 0) {
-            $UnpaidYears = [$currentYear];
-        }
-        // 
-        else {
-            $UnpaidYears = getUnpaidYears($currentYear, $joinedIn['month'], $latestPayment['payment_year']);
-        }
-        // See if the latest payment month it's not the current month
-        if (($latestPayment['payment_month'] != $currentMonth && $latestPayment['payment_year'] != $currentYear) || ($latestPayment['payment_month'] == $currentMonth && $latestPayment['payment_year'] != $currentYear) || ($latestPayment['payment_month'] != $currentMonth && $latestPayment['payment_year'] == $currentYear)) :
-            $unpaidMonths = getUnpaidMonthsOfAllUnpaidYears($latestPayment['payment_month'], $UnpaidYears, false);
-        ?>
-            <div class="alert alert-danger text-center" role="alert">
-                You didn't pay
-                <?php echo count($unpaidMonths) ?>
-                months.
-            </div>
-            <a href="pay.php" class="btn btn-primary btn-block mx-auto mt-3" style="width: 200px;">Pay Month
-                <?php echo $unpaidMonths[0]  ?></a>
-        <?php endif; ?>
-        <!-- See if all months are paid -->
-        <?php if (count(getUnpaidMonthsOfAllUnpaidYears($latestPayment['payment_month'], $UnpaidYears, false)) == 0) :
-
-            $jsontest = json_encode(getUnpaidMonthsOfAllUnpaidYears($latestPayment['payment_month'], $UnpaidYears, false));
-            echo "<script>console.log('See if all months are paid condition: ');</script>";
-            echo "<script>console.log(JSON.parse('$jsontest'));</script>";
-        ?>
-            <div class="alert alert-success text-center" role="alert">
-                You paid all the months.
-            </div>
-    <?php
-        endif;
-    endif; ?>
+        <a href="pay.php" class="btn btn-primary btn-block mx-auto mt-3" style="width: 200px;">
+            Pay Month <?php echo $nextPaymentMonth ?>
+        </a>
+    <?php else : ?>
+        <div class="alert alert-success text-center" role="alert">
+            You have paid all required months.
+        </div>
+    <?php endif; ?>
     <div class="container mt-4">
         <?php
         $paymentsObj = new User();

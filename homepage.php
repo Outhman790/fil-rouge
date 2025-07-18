@@ -82,12 +82,12 @@ if (isset($_SESSION['status']) && $_SESSION['status'] === 'Resident') {
             <div class="card table-modern border-0">
                 <table class="table table-hover mb-0">
                 <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Description</th>
-                        <th>Invoice Image</th>
-                        <th>Amount</th>
-                        <th>Spending Date</th>
+                    <tr class="table-header-solid">
+                        <th class="border-0"><i class="fas fa-tag mr-2"></i>Name</th>
+                        <th class="border-0"><i class="fas fa-info-circle mr-2"></i>Description</th>
+                        <th class="border-0"><i class="fas fa-image mr-2"></i>Invoice Image</th>
+                        <th class="border-0"><i class="fas fa-money-bill mr-2"></i>Amount</th>
+                        <th class="border-0"><i class="fas fa-calendar mr-2"></i>Spending Date</th>
                     </tr>
                 </thead>
                 <tbody>

@@ -22,9 +22,7 @@ else :
         <!-- Include jQuery -->
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-        <!-- Include Bootstrap JavaScript -->
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-
+        <!-- Bootstrap 4 JS removed to avoid conflict with Bootstrap 5 -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
         <link href="css/login-styles.css" rel="stylesheet" />
     </head>
@@ -119,7 +117,11 @@ if (isset($_GET['error'])) {
     // JavaScript code to display the message in the modal
     echo '<script>';
     echo 'document.getElementById("errorMessage").textContent = "' . $message . '";';
-    echo '$("#errorModal").modal("show");';
+    echo 'var errorModalEl = document.getElementById("errorModal");';
+    echo 'if (errorModalEl) {';
+    echo '  var modal = new bootstrap.Modal(errorModalEl);';
+    echo '  modal.show();';
+    echo '}';
     echo '</script>';
 }
 ?>

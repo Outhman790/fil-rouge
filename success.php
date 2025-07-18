@@ -37,19 +37,13 @@ if (!empty($currentUnpaidMonths)) {
     $currentYear = (int)date('Y');
     $currentMonth = (int)date('n');
     
-    if ($payAll && !empty($unpaidMonths)) {
-        // Handle bulk payment - pay all unpaid months
+    if ($payAll && !empty($currentUnpaidMonths)) {
+        // Handle bulk payment - pay all unpaid months using the current calculated unpaid months
         $successCount = 0;
-        foreach ($unpaidMonths as $index => $monthData) {
+        foreach ($currentUnpaidMonths as $index => $monthData) {
             // Extract month and year from the unpaid months data
-            if (is_array($monthData)) {
-                $month = $monthData['month'];
-                $paymentYear = $monthData['year'];
-            } else {
-                // Fallback: if unpaidMonths contains just month numbers, use current year logic
-                $month = $monthData;
-                $paymentYear = $currentYear;
-            }
+            $month = $monthData['month'];
+            $paymentYear = $monthData['year'];
             
             // Create unique transaction ID for each month to avoid duplicates
             $uniqueTransactionId = $checkoutSession->payment_intent . '_' . $month . '_' . $paymentYear . '_' . $index;
@@ -64,7 +58,7 @@ if (!empty($currentUnpaidMonths)) {
         // Debug info for bulk payment
         $debugInfo = [
             'payment_type' => 'bulk',
-            'months_paid' => $unpaidMonths,
+            'months_paid' => $currentUnpaidMonths,
             'successful_payments' => $successCount,
             'total_amount' => $paymentInfo['amount'] ?? 0,
             'transaction_id' => $checkoutSession->payment_intent
@@ -142,8 +136,8 @@ if (!empty($currentUnpaidMonths)) {
                 <div class="modal-body text-center py-4">
                     <p class="lead mb-2">
                         Thank you for your payment<?php 
-                        if ($payAll && !empty($unpaidMonths)) {
-                            echo ' for ' . count($unpaidMonths) . ' months';
+                        if ($payAll && !empty($currentUnpaidMonths)) {
+                            echo ' for ' . count($currentUnpaidMonths) . ' months';
                         } else {
                             echo ' for Month ' . $nextPaymentMonth;
                         }

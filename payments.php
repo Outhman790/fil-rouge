@@ -1,5 +1,12 @@
 <?php
 session_start();
+
+// Security Headers
+header('X-Content-Type-Options: nosniff');
+header('X-Frame-Options: DENY');
+header('X-XSS-Protection: 1; mode=block');
+header('Referrer-Policy: strict-origin-when-cross-origin');
+
 require 'classes/user.class.php';
 
 // Check if user is logged in and is a resident
@@ -85,10 +92,13 @@ if (!isset($_SESSION['resident_id']) || !isset($_SESSION['status']) || $_SESSION
     $paymentsObj = new User();
     $payments = $paymentsObj->getUserPayments($_SESSION['resident_id']);
     
+    // Load application configuration
+    $config = require_once 'config/app-config.php';
+    
     // Create comprehensive payment data
     $allMonths = [];
     $paidMonths = [];
-    $monthlyFee = 300;
+    $monthlyFee = $config['monthly_fee'];
     
     // Get all months from registration to current
     $registrationYear = (int)$joinedIn['year'];

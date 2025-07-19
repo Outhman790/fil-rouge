@@ -110,10 +110,10 @@ class AnnouncementRenderer
                 </div>
                 <div class="col-lg-5">
                     <div class="announcement-image-wrapper">
-                        <img src="includes/uploads/announces/<?php echo $announcement['image'] ?>" 
+                        <img src="includes/uploads/announces/<?php echo htmlspecialchars($announcement['image']) ?>" 
                              class="announcement-image-modern image-clickable" 
                              alt="<?php echo htmlspecialchars($announcement['title']) ?>"
-                             data-image-src="includes/uploads/announces/<?php echo $announcement['image'] ?>"
+                             data-image-src="includes/uploads/announces/<?php echo htmlspecialchars($announcement['image']) ?>"
                              data-image-title="<?php echo htmlspecialchars($announcement['title']) ?>"
                              style="cursor: pointer;">
                         <div class="image-overlay-modern"></div>

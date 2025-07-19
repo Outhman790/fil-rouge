@@ -1,6 +1,12 @@
 <?php
 session_start();
 
+// Security Headers
+header('X-Content-Type-Options: nosniff');
+header('X-Frame-Options: DENY');
+header('X-XSS-Protection: 1; mode=block');
+header('Referrer-Policy: strict-origin-when-cross-origin');
+
 if (isset($_SESSION['resident_id'])) :
     // Include required files
     require_once 'classes/admin.class.php';

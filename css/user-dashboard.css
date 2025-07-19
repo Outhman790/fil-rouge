@@ -361,7 +361,6 @@ body.user-dashboard {
 
 .table-modern tbody tr:hover {
     background-color: #f8f9ff;
-    transform: scale(1.01);
 }
 
 .table-modern tbody td {

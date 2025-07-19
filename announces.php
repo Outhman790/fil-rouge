@@ -5,8 +5,8 @@ if (isset($_SESSION['resident_id'])) :
     // Include required files
     require_once 'classes/admin.class.php';
     require_once 'classes/user.class.php';
-    require_once 'includes/page-header.php';
-    require_once 'includes/announcement-renderer.php';
+    require_once 'classes/page-renderer.class.php';
+    require_once 'classes/announcement-renderer.class.php';
     
     // Initialize objects and data
     $adminObj = new Admin();
@@ -26,26 +26,26 @@ if (isset($_SESSION['resident_id'])) :
     ];
     
     // Render page header
-    renderPageHeader($pageConfig['title'], $pageConfig['currentPage'], $pageConfig['additionalCSS'], $pageConfig['additionalMeta']);
+    PageRenderer::renderPageHeader($pageConfig['title'], $pageConfig['currentPage'], $pageConfig['additionalCSS'], $pageConfig['additionalMeta']);
     
     // Render hero section
-    renderAnnouncementHero(count($allAnnouncements ?? []));
+    AnnouncementRenderer::renderAnnouncementHero(count($allAnnouncements ?? []));
 
     <!-- Main Content -->
     <div class="container">
         <div class="announcements-wrapper">
             <?php if (empty($allAnnouncements)) : ?>
-                <?php renderEmptyState(); ?>
+                <?php AnnouncementRenderer::renderEmptyState(); ?>
             <?php else : ?>
                 <?php foreach ($allAnnouncements as $announcement) : ?>
-                    <?php renderAnnouncementCard($announcement, $userObj); ?>
+                    <?php AnnouncementRenderer::renderAnnouncementCard($announcement, $userObj); ?>
                 <?php endforeach; ?>
             <?php endif; ?>
         </div>
     </div>
 
-    <?php renderImageModal(); ?>
-    <?php renderPageFooter($pageConfig['additionalJS']); ?>
+    <?php AnnouncementRenderer::renderImageModal(); ?>
+    <?php PageRenderer::renderPageFooter($pageConfig['additionalJS']); ?>
 </body>
 
 </html>

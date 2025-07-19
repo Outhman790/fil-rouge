@@ -267,14 +267,39 @@ class AnnouncementsManager {
     handleImageClick(event) {
         console.log('Click detected on:', event.target);
         
-        if (event.target.classList.contains('image-clickable')) {
+        // Check if clicked element or its parent is image-clickable
+        const imageElement = event.target.closest('.image-clickable') || 
+                           (event.target.classList.contains('image-clickable') ? event.target : null);
+        
+        if (imageElement) {
             event.preventDefault();
             console.log('Image clicked!');
             
-            const imageSrc = event.target.getAttribute('data-image-src');
-            const imageTitle = event.target.getAttribute('data-image-title');
+            const imageSrc = imageElement.getAttribute('data-image-src');
+            const imageTitle = imageElement.getAttribute('data-image-title');
+            
+            console.log('Image src:', imageSrc);
+            console.log('Image title:', imageTitle);
             
             this.showImageModal(imageSrc, imageTitle);
+        }
+        
+        // Also check for image wrapper clicks
+        const wrapperElement = event.target.closest('.announcement-image-wrapper');
+        if (wrapperElement && !imageElement) {
+            event.preventDefault();
+            console.log('Image wrapper clicked!');
+            
+            const img = wrapperElement.querySelector('.image-clickable');
+            if (img) {
+                const imageSrc = img.getAttribute('data-image-src');
+                const imageTitle = img.getAttribute('data-image-title');
+                
+                console.log('Wrapper - Image src:', imageSrc);
+                console.log('Wrapper - Image title:', imageTitle);
+                
+                this.showImageModal(imageSrc, imageTitle);
+            }
         }
     }
 
@@ -316,31 +341,39 @@ class AnnouncementsManager {
     }
 
     bindImageEvents() {
-        $(document).ready(() => {
-            $('.image-clickable').click((e) => {
+        const self = this;
+        $(document).ready(function() {
+            // Use event delegation for dynamic content
+            $(document).on('click', '.image-clickable', function(e) {
                 e.preventDefault();
                 console.log('Image clicked via jQuery!');
                 
-                const imageSrc = $(e.target).attr('data-image-src');
-                const imageTitle = $(e.target).attr('data-image-title');
+                const imageSrc = $(this).attr('data-image-src');
+                const imageTitle = $(this).attr('data-image-title');
                 
-                this.showImageModal(imageSrc, imageTitle);
+                console.log('Image src:', imageSrc);
+                console.log('Image title:', imageTitle);
+                
+                self.showImageModal(imageSrc, imageTitle);
             });
 
-            $('.announcement-image-wrapper').click((e) => {
+            $(document).on('click', '.announcement-image-wrapper', function(e) {
                 e.preventDefault();
                 console.log('Image wrapper clicked!');
                 
-                const img = $(e.target).find('.image-clickable');
+                const img = $(this).find('.image-clickable');
                 const imageSrc = img.attr('data-image-src');
                 const imageTitle = img.attr('data-image-title');
                 
-                this.showImageModal(imageSrc, imageTitle);
+                console.log('Wrapper - Image src:', imageSrc);
+                console.log('Wrapper - Image title:', imageTitle);
+                
+                self.showImageModal(imageSrc, imageTitle);
             });
 
-            $('#imageModal').on('click', (event) => {
-                if (event.target === event.currentTarget) {
-                    $(event.currentTarget).modal('hide');
+            $('#imageModal').on('click', function(event) {
+                if (event.target === this) {
+                    $(this).modal('hide');
                 }
             });
         });

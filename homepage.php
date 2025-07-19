@@ -1,9 +1,20 @@
 <?php
 session_start();
+
+// Security Headers
+header('X-Content-Type-Options: nosniff');
+header('X-Frame-Options: DENY'); 
+header('X-XSS-Protection: 1; mode=block');
+header('Referrer-Policy: strict-origin-when-cross-origin');
+
 require_once 'classes/user.class.php';
+
+// Load application configuration
+$config = require_once 'config/app-config.php';
+
 $purchasesObj = new User();
 $totalPurchases = $purchasesObj->getTotalPurchases();
-$itemsPerPage = 4;
+$itemsPerPage = $config['items_per_page'];
 $totalPages = ceil($totalPurchases / $itemsPerPage);
 
 $currentpage = isset($_GET['page']) ? $_GET['page'] : 1;
@@ -67,7 +78,7 @@ if (isset($_SESSION['status']) && $_SESSION['status'] === 'Resident') {
             <div class="glass-container p-4">
                 <div class="welcome-text text-center mb-4">
                     <h1><i class="fas fa-home mr-3"></i>Welcome Home!</h1>
-                    <p class="lead">Hello, <?php echo $_SESSION['fName'] . ' ' . $_SESSION['lName'] ?>!</p>
+                    <p class="lead">Hello, <?php echo htmlspecialchars($_SESSION['fName'] . ' ' . $_SESSION['lName']) ?>!</p>
                     <p class="text-muted">Thank you for using Obuildings.</p>
                     <a href="payments.php" class="btn btn-pay btn-lg px-4">
                         <i class="fas fa-credit-card mr-2"></i>View Payments
@@ -93,11 +104,11 @@ if (isset($_SESSION['status']) && $_SESSION['status'] === 'Resident') {
                         <tbody>
                             <?php foreach ($purchases as $purchase) : ?>
                                 <tr>
-                                    <td><?php echo $purchase['name']; ?></td>
-                                    <td><?php echo $purchase['description']; ?></td>
+                                    <td><?php echo htmlspecialchars($purchase['name']); ?></td>
+                                    <td><?php echo htmlspecialchars($purchase['description']); ?></td>
                                     <td>
-                                        <a href="includes/uploads/<?php echo $purchase['invoice'] ?>" data-toggle="modal" data-target="#imageModal">
-                                            <img src="includes/uploads/<?php echo $purchase['invoice'] ?>" alt="Invoice Image" height="100">
+                                        <a href="includes/uploads/<?php echo htmlspecialchars($purchase['invoice']) ?>" data-toggle="modal" data-target="#imageModal">
+                                            <img src="includes/uploads/<?php echo htmlspecialchars($purchase['invoice']) ?>" alt="Invoice Image" height="100">
                                         </a>
                                     </td>
                                     <td class="text-center"><?php echo number_format($purchase['amount'], 0, ',', '.') ?>

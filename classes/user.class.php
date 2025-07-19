@@ -183,4 +183,21 @@ class User extends DB
             return false;
         }
     }
+
+    public function removeLike($announcementId, $residentId)
+    {
+        try {
+            $query = "DELETE FROM likes WHERE announcement_id = :announcementId AND resident_id = :residentId";
+            $pdo = $this->connect();
+            $stmt = $pdo->prepare($query);
+            $stmt->bindParam(':announcementId', $announcementId);
+            $stmt->bindParam(':residentId', $residentId);
+            $removeLike = $stmt->execute();
+            return $removeLike;
+        } catch (PDOException $e) {
+            // Handle any database errors here
+            echo 'Database Error: ' . $e->getMessage();
+            return false;
+        }
+    }
 }

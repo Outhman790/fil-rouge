@@ -173,7 +173,7 @@ if (isset($_SESSION['resident_id'])) :
                         <div class="interaction-stats">
                             <div class="stat-item">
                                 <button class="interaction-btn like-btn" data-announcement-id="<?php echo $announce['announcement_id']; ?>">
-                                    <i class="fas fa-heart"></i>
+                                    <i class="far fa-heart"></i>
                                     <span class="like-count" id="like-count-<?php echo $announce['announcement_id']; ?>"><?php echo $countLikes['like_count'] ?></span>
                                 </button>
                             </div>
@@ -254,6 +254,10 @@ if (isset($_SESSION['resident_id'])) :
     // WebSocket event handlers
     socket.onopen = function(event) {
         console.log('WebSocket connection established.');
+        // Initialize like button states after connection is established
+        setTimeout(() => {
+            initializeLikeStates();
+        }, 1000);
     };
 
     socket.onmessage = function(event) {
@@ -267,7 +271,13 @@ if (isset($_SESSION['resident_id'])) :
             if (data.type === 'comment') {
                 addCommentToDOM(data);
             } else if (data.type === 'like') {
+                console.log('Received like update:', data);
                 updateLikeCount(data);
+            } else if (data.type === 'like_status') {
+                console.log('Received like status:', data);
+                updateLikeCount(data); // Use same function for consistency
+            } else {
+                console.log('Unknown message type:', data.type);
             }
         } catch (error) {
             console.error('Error parsing JSON:', error);
@@ -314,17 +324,25 @@ if (isset($_SESSION['resident_id'])) :
         // Add to comments list
         commentsList.appendChild(commentElement);
 
-        // Update comment count
+        // Update comment count with actual count from server
         const commentCountElement = document.getElementById(`comment-count-${announcementId}`);
         if (commentCountElement) {
-            const currentCount = parseInt(commentCountElement.textContent);
-            commentCountElement.textContent = currentCount + 1;
+            // Use server-provided count if available, otherwise increment
+            const newCount = data.total_comments || (parseInt(commentCountElement.textContent) + 1);
+            commentCountElement.textContent = newCount;
         }
 
-        // Show "No comments" message if this is the first comment
+        // Hide "No comments" message if this is the first comment
         const noCommentsMessage = commentsList.parentElement.querySelector('.no-comments-state');
         if (noCommentsMessage) {
             noCommentsMessage.style.display = 'none';
+        }
+
+        // Update comments header count
+        const commentsHeader = commentsList.parentElement.querySelector('.comments-header h6');
+        if (commentsHeader) {
+            const actualCount = commentsList.children.length;
+            commentsHeader.innerHTML = `<i class="fas fa-comments"></i> Comments (${actualCount})`;
         }
 
         // Trigger pulse animation on announcement card
@@ -338,14 +356,72 @@ if (isset($_SESSION['resident_id'])) :
     function updateLikeCount(data) {
         const announcementId = data.announcement_id;
         const countLikes = data.count_likes;
+        const isLiked = data.is_liked;
+        const currentUserId = '<?php echo $_SESSION['resident_id']; ?>';
         
-        const likeCountElement = document.getElementById(`like-count-${announcementId}`);
-        if (likeCountElement) {
-            likeCountElement.textContent = countLikes;
+        console.log('Updating like count for announcement:', announcementId, 'Count:', countLikes, 'Is liked:', isLiked, 'For user:', data.resident_id);
+        
+        // Update both count and button state
+        const likeButton = document.querySelector(`[data-announcement-id="${announcementId}"].like-btn`);
+        if (likeButton) {
+            const likeCountSpan = likeButton.querySelector('.like-count');
+            if (likeCountSpan) {
+                likeCountSpan.textContent = countLikes;
+            }
+            
+            // Only update button state if this is for the current user or if we have explicit like status
+            if (isLiked !== undefined && (data.resident_id === currentUserId || data.type === 'like_status')) {
+                console.log('Updating button state for current user. Is liked:', isLiked);
+                if (isLiked) {
+                    likeButton.classList.add('liked');
+                    likeButton.innerHTML = '<i class="fas fa-heart"></i> <span class="like-count" id="like-count-' + announcementId + '">' + countLikes + '</span>';
+                } else {
+                    likeButton.classList.remove('liked');
+                    likeButton.innerHTML = '<i class="far fa-heart"></i> <span class="like-count" id="like-count-' + announcementId + '">' + countLikes + '</span>';
+                }
+            }
         }
         
         // Trigger pulse animation on announcement card
         triggerCardAnimation(announcementId);
+    }
+
+    // Function to toggle like button state immediately
+    function toggleLikeButtonState(button, isLiked) {
+        const announcementId = button.dataset.announcementId;
+        const currentCountElement = button.querySelector('.like-count');
+        const currentCount = parseInt(currentCountElement.textContent);
+        
+        // Calculate new count based on toggle action
+        const newCount = Math.max(0, isLiked ? currentCount + 1 : currentCount - 1);
+        
+        console.log('Toggling like state:', isLiked, 'Current count:', currentCount, 'New count:', newCount);
+        
+        if (isLiked) {
+            button.classList.add('liked');
+            button.innerHTML = '<i class="fas fa-heart"></i> <span class="like-count" id="like-count-' + announcementId + '">' + newCount + '</span>';
+        } else {
+            button.classList.remove('liked');
+            button.innerHTML = '<i class="far fa-heart"></i> <span class="like-count" id="like-count-' + announcementId + '">' + newCount + '</span>';
+        }
+    }
+
+    // Function to update like button state
+    function updateLikeButtonState(data) {
+        const announcementId = data.announcement_id;
+        const isLiked = data.is_liked;
+        const countLikes = data.count_likes;
+        
+        const likeButton = document.querySelector(`[data-announcement-id="${announcementId}"].like-btn`);
+        if (likeButton) {
+            if (isLiked) {
+                likeButton.classList.add('liked');
+                likeButton.innerHTML = '<i class="fas fa-heart"></i> <span class="like-count" id="like-count-' + announcementId + '">' + countLikes + '</span>';
+            } else {
+                likeButton.classList.remove('liked');
+                likeButton.innerHTML = '<i class="far fa-heart"></i> <span class="like-count" id="like-count-' + announcementId + '">' + countLikes + '</span>';
+            }
+        }
     }
 
     // Function to trigger card animation
@@ -452,11 +528,29 @@ if (isset($_SESSION['resident_id'])) :
             const announcementId = button.dataset.announcementId;
             const residentId = '<?php echo $_SESSION['resident_id']; ?>';
             
+            // Prevent double-clicking
+            if (button.dataset.processing === 'true') {
+                return;
+            }
+            button.dataset.processing = 'true';
+            
+            // Check if currently liked
+            const isCurrentlyLiked = button.classList.contains('liked');
+            console.log('Like button clicked. Currently liked:', isCurrentlyLiked);
+            
+            // Send like/unlike request to server
             sendMessage(JSON.stringify({
                 type: 'like',
                 announcement_id: announcementId,
                 resident_id: residentId,
+                action: isCurrentlyLiked ? 'unlike' : 'like'
             }));
+            
+            // Reset processing flag after a short delay
+            setTimeout(() => {
+                button.dataset.processing = 'false';
+                console.log('Like toggle completed for announcement:', announcementId);
+            }, 1000);
         }
         
     });
@@ -510,6 +604,22 @@ if (isset($_SESSION['resident_id'])) :
             $('#imageModal').modal('show');
         }
     });
+
+    // Initialize like button states on page load
+    function initializeLikeStates() {
+        const likeButtons = document.querySelectorAll('.like-btn');
+        likeButtons.forEach(button => {
+            const announcementId = button.dataset.announcementId;
+            const residentId = '<?php echo $_SESSION['resident_id']; ?>';
+            
+            // Check if user already liked this announcement
+            sendMessage(JSON.stringify({
+                type: 'check_like',
+                announcement_id: announcementId,
+                resident_id: residentId
+            }));
+        });
+    }
 
     // Alternative method - direct click handler
     $(document).ready(function() {

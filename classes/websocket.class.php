@@ -54,30 +54,76 @@ class AnnouncementsWebSocket implements MessageComponentInterface
         if (isset($data['type']) && ($data['type'] === 'like')) {
             $announcementId = $data['announcement_id'];
             $residentId = $data['resident_id'];
+            $action = $data['action'] ?? 'like'; // 'like' or 'unlike'
             $userObj = new User();
-            $hasLiked = false;
-            $countLikes = $userObj->countLikes($announcementId);
 
             // Check if the resident has already liked
             $alreadyLiked = $userObj->checkLike($announcementId, $residentId);
-            if (!$alreadyLiked) {
-                if ($userObj->addLike($announcementId, $residentId)) {
-                    $hasLiked = true;
-                }
+            $success = false;
+            $isLiked = false;
+
+            if ($action === 'like' && !$alreadyLiked) {
+                $success = $userObj->addLike($announcementId, $residentId);
+                $isLiked = $success;
+            } elseif ($action === 'unlike' && $alreadyLiked) {
+                $success = $userObj->removeLike($announcementId, $residentId);
+                $isLiked = false;
+            } else {
+                // No change needed - already in desired state
+                $isLiked = $alreadyLiked;
+                $success = true;
             }
 
-            // Create a new data object with the reaction data
-            $responseData = [
+            // Get updated like count
+            $countLikes = $userObj->countLikes($announcementId);
+
+            // Send personalized response to the user who clicked
+            $personalResponseData = [
                 'type' => 'like',
                 'announcement_id' => $announcementId,
                 'resident_id' => $residentId,
-                'count_likes' => $hasLiked ? $countLikes['like_count'] + 1 : $countLikes['like_count'],
+                'count_likes' => $countLikes['like_count'],
+                'is_liked' => $isLiked,
+                'success' => $success
             ];
 
-            // Broadcast the reaction to all connected clients
+            // Send personalized response to the clicking user
+            $from->send(json_encode($personalResponseData));
+
+            // Broadcast general update (count only) to all other clients
+            $generalResponseData = [
+                'type' => 'like',
+                'announcement_id' => $announcementId,
+                'count_likes' => $countLikes['like_count']
+            ];
+
             foreach ($this->clients as $client) {
-                $client->send(json_encode($responseData));
+                if ($client !== $from) {
+                    $client->send(json_encode($generalResponseData));
+                }
             }
+        }
+
+        if (isset($data['type']) && ($data['type'] === 'check_like')) {
+            $announcementId = $data['announcement_id'];
+            $residentId = $data['resident_id'];
+            $userObj = new User();
+
+            // Check if the resident has already liked
+            $isLiked = $userObj->checkLike($announcementId, $residentId);
+            $countLikes = $userObj->countLikes($announcementId);
+
+            // Send like status back to the requesting client
+            $responseData = [
+                'type' => 'like_status',
+                'announcement_id' => $announcementId,
+                'resident_id' => $residentId,
+                'is_liked' => $isLiked,
+                'count_likes' => $countLikes['like_count']
+            ];
+
+            // Send only to the requesting client
+            $from->send(json_encode($responseData));
         }
     }
 

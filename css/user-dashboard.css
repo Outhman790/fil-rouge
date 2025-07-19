@@ -1229,6 +1229,15 @@ body.user-dashboard {
     cursor: default;
 }
 
+.interaction-btn.like-btn.liked {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    transform: scale(1.05);
+}
+
+.interaction-btn.like-btn.liked:hover {
+    background: linear-gradient(135deg, #c82333, #bd2130);
+}
+
 .comment-input-wrapper {
     margin-top: 1rem;
 }

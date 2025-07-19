@@ -168,13 +168,11 @@
 
 /* Table Row Animations */
 .table tbody tr {
-    transition: all 0.3s ease;
+    transition: background-color 0.2s ease;
 }
 
 .table tbody tr:hover {
     background-color: #f8f9fa;
-    transform: translateX(5px);
-    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
 }
 
 .table tbody tr.table-active {

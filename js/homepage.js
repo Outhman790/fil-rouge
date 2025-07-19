@@ -68,16 +68,14 @@ class HomepageManager {
     }
 
     addAnimations() {
-        // Fade in welcome section
-        $('.welcome-text').hide().fadeIn(1000);
+        // Simple fade in welcome section (no delays)
+        $('.welcome-text').fadeIn(500);
         
-        // Animate table rows
-        $('.table tbody tr').each(function(index) {
-            $(this).delay(index * 100).fadeIn(500);
-        });
+        // No table row animations to prevent scroll lag
+        $('.table tbody tr').show();
 
-        // Animate pagination
-        $('.pagination').hide().delay(800).fadeIn(500);
+        // Simple pagination fade
+        $('.pagination').fadeIn(300);
     }
 
     addHoverEffects() {

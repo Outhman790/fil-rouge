@@ -93,13 +93,14 @@ class User extends DB
             $allComments = $stmt->fetchAll(PDO::FETCH_ASSOC);
             return $allComments;
         } catch (PDOException $e) {
-            echo "error occured" . $e->getMessage();
+            error_log("Database error in addLike: " . $e->getMessage());
+            return false;
         }
     }
     public function addComment($announcementId, $residentId, $commentText)
     {
         $currentTimestamp = date('Y-m-d H:i:s');
-        echo 'Current Timestamp: ' . $currentTimestamp . '<br>';
+        // Current timestamp for comment creation
 
         $query = "INSERT INTO comments (announcement_id, resident_id, comment_text, created_at)
                   VALUES (:announcementId, :residentId, :commentText, :createdAt)";
@@ -115,15 +116,11 @@ class User extends DB
         try {
             $stmt->execute();
             $lastInsertedId = $pdo->lastInsertId(); // Use lastInsertId() on the same PDO object
-            echo $lastInsertedId . "<br>";
-
             $selectQuery = "SELECT * FROM comments WHERE comment_id = :commentId";
             $selectStmt = $pdo->prepare($selectQuery);
             $selectStmt->bindValue(':commentId', $lastInsertedId, PDO::PARAM_INT);
             $selectStmt->execute();
             $row = $selectStmt->fetch(PDO::FETCH_ASSOC);
-            echo $row['created_at'];
-            print_r($row);
             return $row;
         } catch (PDOException $e) {
             // Handle any database errors here

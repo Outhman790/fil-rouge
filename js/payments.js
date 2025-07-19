@@ -42,21 +42,15 @@ class PaymentsDashboard {
     }
 
     addAnimations() {
-        // Animate payment cards on load
-        $('.payment-status-card').hide().fadeIn(1000);
+        // Simple animations without staggered delays
+        $('.payment-status-card').fadeIn(400);
+        $('.stat-card').fadeIn(400);
         
-        // Stagger animation for stat cards
-        $('.stat-card').each(function(index) {
-            $(this).delay(index * 200).fadeIn(500);
+        // Animate progress bar immediately
+        $('.progress-bar').each(function() {
+            const width = $(this).attr('aria-valuenow') + '%';
+            $(this).css('width', width);
         });
-        
-        // Animate progress bar
-        setTimeout(() => {
-            $('.progress-bar').each(function() {
-                const width = $(this).attr('aria-valuenow') + '%';
-                $(this).css('width', width);
-            });
-        }, 500);
     }
 
     initializeTooltips() {

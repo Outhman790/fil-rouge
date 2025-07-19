@@ -1,5 +1,5 @@
 <?php
-// Announcement Renderer Class
+// Announcement Renderer
 // Handles rendering of announcement cards and related components
 
 class AnnouncementRenderer

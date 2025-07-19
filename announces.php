@@ -5,8 +5,8 @@ if (isset($_SESSION['resident_id'])) :
     // Include required files
     require_once 'classes/admin.class.php';
     require_once 'classes/user.class.php';
-    require_once 'classes/page-renderer.class.php';
-    require_once 'classes/announcement-renderer.class.php';
+    require_once 'render/page-renderer.php';
+    require_once 'render/announcement-renderer.php';
     
     // Initialize objects and data
     $adminObj = new Admin();
@@ -30,6 +30,7 @@ if (isset($_SESSION['resident_id'])) :
     
     // Render hero section
     AnnouncementRenderer::renderAnnouncementHero(count($allAnnouncements ?? []));
+?>
 
     <!-- Main Content -->
     <div class="container">
@@ -44,11 +45,10 @@ if (isset($_SESSION['resident_id'])) :
         </div>
     </div>
 
-    <?php AnnouncementRenderer::renderImageModal(); ?>
-    <?php PageRenderer::renderPageFooter($pageConfig['additionalJS']); ?>
-</body>
-
-</html>
+    <?php 
+    AnnouncementRenderer::renderImageModal(); 
+    PageRenderer::renderPageFooter($pageConfig['additionalJS']); 
+    ?>
 <?php
 else :
     header('location: login.php');

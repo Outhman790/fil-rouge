@@ -1,5 +1,5 @@
 <?php
-// Page Renderer Class
+// Page Renderer
 // Reusable page components for consistent layout across application
 
 class PageRenderer

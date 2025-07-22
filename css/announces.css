@@ -184,10 +184,13 @@ body {
   height: fit-content;
   display: flex;
   flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
 }
 
 .announcement-card-modern:hover {
-  box-shadow: var(--shadow);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
 /* Card Header */

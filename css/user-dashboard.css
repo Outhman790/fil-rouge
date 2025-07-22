@@ -253,7 +253,7 @@
 
 /* Body and Background */
 body.user-dashboard {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: none;
     min-height: 100vh;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
@@ -903,16 +903,7 @@ body.user-dashboard {
 }
 
 .hero-section::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="rgba(255,255,255,0.1)"><path d="M0,0v46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1047.77,7.87,1096,0V0Z"/></svg>') repeat-x;
-    background-size: 100px 100px;
-    opacity: 0.3;
-    animation: float 20s ease-in-out infinite;
+    display: none;
 }
 
 @keyframes float {

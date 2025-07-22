@@ -41,28 +41,25 @@ if (isset($_SESSION['resident_id'])) :
 ?>
 
 <!-- Hero Section -->
-<div class="hero-section">
+<div class="announce-hero">
     <div class="container">
-        <div class="hero-content">
-            <h1 class="hero-title">
-                <i class="fas fa-bullhorn" style="color: #f093fb; margin-right: 1rem;"></i>
-                Community Hub
-            </h1>
-            <p class="hero-subtitle">Stay connected with your community - discover the latest news, events, and important announcements</p>
-            
-            <div class="hero-stats">
-                <div class="stat-item">
-                    <span class="stat-number"><?php echo $totalAnnouncements; ?></span>
-                    <span class="stat-label">Total Announcements</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number"><?php echo $recentAnnouncements; ?></span>
-                    <span class="stat-label">Recent</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number"><?php echo $currentMonth; ?></span>
-                    <span class="stat-label">Current Month</span>
-                </div>
+        <h1 class="announce-title">
+            <i class="fas fa-bullhorn"></i>
+            Community Announcements
+        </h1>
+        <p class="announce-subtitle">Stay informed with the latest updates, events, and important notices from your building management</p>
+        <div class="announce-stats">
+            <div class="announce-card">
+                <span class="announce-number"><?php echo $totalAnnouncements; ?></span>
+                <span class="announce-label">Total Posts</span>
+            </div>
+            <div class="announce-card">
+                <span class="announce-number"><?php echo $currentMonth; ?></span>
+                <span class="announce-label">Current Month</span>
+            </div>
+            <div class="announce-card">
+                <span class="announce-number"><?php echo date('Y'); ?></span>
+                <span class="announce-label">Year</span>
             </div>
         </div>
     </div>

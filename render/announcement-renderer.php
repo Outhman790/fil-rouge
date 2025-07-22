@@ -7,6 +7,9 @@ class AnnouncementRenderer
     public static function renderAnnouncementCard($announcement, $userObj) {
         $countLikes = $userObj->countLikes($announcement['announcement_id']);
         $allComments = $userObj->showComments($announcement['announcement_id']);
+        
+        // Check if announcement is recent (within last 7 days)
+        $isRecent = (time() - strtotime($announcement['created_at'])) < (7 * 24 * 60 * 60);
 ?>
         <!-- Modern Announcement Card -->
         <div class="announcement-card-modern" data-announcement-id="<?php echo $announcement['announcement_id']; ?>">
@@ -22,9 +25,11 @@ class AnnouncementRenderer
                         <?php echo date('g:i A', strtotime($announcement['created_at'])) ?>
                     </div>
                 </div>
+                <?php if ($isRecent) : ?>
                 <div class="announcement-badge-modern">
                     <i class="fas fa-star"></i>Featured
                 </div>
+                <?php endif; ?>
             </div>
 
             <!-- Card Content -->

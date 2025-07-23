@@ -1,34 +1,19 @@
-/* Ultra-Fast Announcements - Minimal CSS */
-
-/* Essential Variables Only */
-:root {
-  --primary: #6366f1;
-  --success: #10b981;
-  --danger: #ef4444;
-  --white: #ffffff;
-  --gray-50: #f9fafb;
-  --gray-100: #f3f4f6;
-  --gray-200: #e5e7eb;
-  --gray-500: #6b7280;
-  --gray-600: #4b5563;
-  --gray-800: #1f2937;
-  --shadow: 0 1px 3px rgba(0,0,0,0.1);
-  --radius: 8px;
-}
+/* Optimized Announcements CSS */
+/* Variables and animations are loaded separately via PageRenderer */
 
 /* Minimal Reset */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  font-family: system-ui, sans-serif;
-  background: var(--gray-50);
-  color: var(--gray-800);
+  font-family: var(--font-family-sans);
+  background: var(--color-gray-50);
+  color: var(--color-gray-800);
   line-height: 1.6;
 }
 
 /* Elegant Hero Section */
 .announce-hero {
-  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 50%, #6d28d9 100%) !important;
+  background: var(--gradient-hero) !important;
   color: white !important;
   padding: 4rem 0 !important;
   text-align: center !important;
@@ -139,8 +124,8 @@ body {
 
 /* Main Content */
 .announcements-section {
-  padding: 2rem 0;
-  background: var(--gray-800);
+  padding: var(--spacing-xl) 0;
+  background: var(--color-gray-800);
 }
 
 .container {
@@ -177,8 +162,8 @@ body {
 /* Responsive Card Design */
 .announcement-card-modern {
   background: white;
-  border-radius: var(--radius);
-  border: 1px solid var(--gray-200);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--color-gray-200);
   overflow: hidden;
   width: 100%;
   height: fit-content;
@@ -196,7 +181,7 @@ body {
 /* Card Header */
 .card-header-modern {
   padding: 1rem;
-  background: var(--gray-50);
+  background: var(--color-gray-50);
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -215,11 +200,11 @@ body {
   align-items: center;
   gap: 0.25rem;
   font-size: 0.8rem;
-  color: var(--gray-500);
+  color: var(--color-gray-500);
 }
 
 .announcement-badge-modern {
-  background: var(--primary);
+  background: var(--color-primary);
   color: white;
   padding: 0.25rem 0.75rem;
   border-radius: 12px;
@@ -241,7 +226,7 @@ body {
 }
 
 .announcement-description {
-  color: var(--gray-600);
+  color: var(--color-gray-600);
   font-size: 0.9rem;
   line-height: 1.4;
   margin-bottom: 1rem;
@@ -253,10 +238,10 @@ body {
 
 /* Simple Image */
 .announcement-image-wrapper {
-  border-radius: var(--radius);
+  border-radius: var(--border-radius);
   overflow: hidden;
   height: 180px;
-  background: var(--gray-200);
+  background: var(--color-gray-200);
   margin-bottom: 1rem;
   cursor: pointer;
 }
@@ -289,8 +274,8 @@ body {
 /* Card Interactions */
 .card-interactions-modern {
   padding: 1rem;
-  background: var(--gray-50);
-  border-top: 1px solid var(--gray-200);
+  background: var(--color-gray-50);
+  border-top: 1px solid var(--color-gray-200);
 }
 
 .interaction-stats {
@@ -315,24 +300,24 @@ body {
 }
 
 .like-btn {
-  background: var(--gray-200);
-  color: var(--gray-600);
+  background: var(--color-gray-200, #e5e7eb);
+  color: var(--color-gray-600, #4b5563);
 }
 
 .like-btn.liked {
-  background: var(--danger);
+  background: var(--color-danger, #ef4444);
   color: white;
 }
 
 .comment-info {
-  background: var(--success);
+  background: var(--color-success, #10b981);
   color: white;
 }
 
 /* Simple Comment Input */
 .comment-input-wrapper {
   background: white;
-  border: 1px solid var(--gray-200);
+  border: 1px solid var(--color-gray-200);
   border-radius: 20px;
   padding: 0.5rem;
   display: flex;
@@ -343,7 +328,7 @@ body {
 .user-avatar {
   width: 24px;
   height: 24px;
-  background: var(--primary);
+  background: var(--color-primary);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -363,7 +348,7 @@ body {
 .comment-submit-btn {
   width: 24px;
   height: 24px;
-  background: var(--primary);
+  background: var(--color-primary);
   color: white;
   border: none;
   border-radius: 50%;
@@ -383,10 +368,10 @@ body {
 .comments-header {
   font-size: 0.8rem;
   font-weight: 600;
-  color: var(--gray-600);
+  color: var(--color-gray-600);
   margin-bottom: 0.5rem;
   padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--gray-200);
+  border-bottom: 1px solid var(--color-gray-200);
 }
 
 .comments-list-modern {
@@ -399,14 +384,14 @@ body {
   gap: 0.5rem;
   margin-bottom: 0.75rem;
   padding: 0.5rem;
-  background: var(--gray-50);
-  border-radius: var(--radius);
+  background: var(--color-gray-50);
+  border-radius: var(--border-radius);
 }
 
 .comment-avatar-modern {
   width: 24px;
   height: 24px;
-  background: var(--primary);
+  background: var(--color-primary);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -433,12 +418,12 @@ body {
 
 .comment-date-modern {
   font-size: 0.7rem;
-  color: var(--gray-500);
+  color: var(--color-gray-500);
 }
 
 .comment-text-modern {
   font-size: 0.8rem;
-  color: var(--gray-600);
+  color: var(--color-gray-600);
   line-height: 1.3;
   margin: 0;
 }
@@ -447,7 +432,7 @@ body {
 .no-comments-state {
   text-align: center;
   padding: 1rem;
-  color: var(--gray-500);
+  color: var(--color-gray-500);
   font-size: 0.8rem;
 }
 
@@ -460,16 +445,16 @@ body {
 
 .empty-state-card {
   background: white;
-  border-radius: var(--radius);
+  border-radius: var(--border-radius);
   padding: 2rem;
   text-align: center;
-  border: 1px solid var(--gray-200);
+  border: 1px solid var(--color-gray-200);
   max-width: 400px;
 }
 
 .empty-state-icon {
   font-size: 3rem;
-  color: var(--primary);
+  color: var(--color-primary);
   margin-bottom: 1rem;
 }
 
@@ -480,7 +465,7 @@ body {
 }
 
 .empty-state-subtitle {
-  color: var(--gray-600);
+  color: var(--color-gray-600);
   font-size: 0.9rem;
   margin-bottom: 1rem;
 }
@@ -488,7 +473,7 @@ body {
 .pulse-circle {
   width: 6px;
   height: 6px;
-  background: var(--primary);
+  background: var(--color-primary);
   border-radius: 50%;
   display: inline-block;
   margin: 0 2px;

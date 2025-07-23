@@ -109,6 +109,41 @@ class Admin extends DB
         return $total['payment_count'] * 300;
     }
 
+    /**
+     * Optimized method to get all monthly payment totals in a single query
+     * Replaces multiple getTotalPaimentsOfMonthAndYear calls
+     */
+    public function getAllMonthlyPaymentTotals($year, $maxMonth = 12)
+    {
+        $query = "SELECT 
+                    payment_month, 
+                    COUNT(*) * 300 AS total_amount
+                  FROM payments 
+                  WHERE payment_year = :year AND payment_month <= :max_month 
+                  GROUP BY payment_month
+                  ORDER BY payment_month";
+        
+        $statement = $this->connect()->prepare($query);
+        $statement->bindParam(':year', $year, PDO::PARAM_INT);
+        $statement->bindParam(':max_month', $maxMonth, PDO::PARAM_INT);
+        $statement->execute();
+        
+        $results = $statement->fetchAll(PDO::FETCH_ASSOC);
+        
+        // Create array with all months (1-12) initialized to 0
+        $monthlyTotals = [];
+        for ($i = 1; $i <= $maxMonth; $i++) {
+            $monthlyTotals[$i] = 0;
+        }
+        
+        // Fill in actual values
+        foreach ($results as $row) {
+            $monthlyTotals[$row['payment_month']] = (int)$row['total_amount'];
+        }
+        
+        return $monthlyTotals;
+    }
+
     function addAnnouncement($title, $description, $image)
     {
         try {

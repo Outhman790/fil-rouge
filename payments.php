@@ -14,58 +14,21 @@ if (!isset($_SESSION['resident_id']) || !isset($_SESSION['status']) || $_SESSION
     header('location: login.php');
     exit();
 }
+// Include PageRenderer
+require_once 'render/page-renderer.php';
+
+// Page configuration
+$pageConfig = [
+    'title' => 'Payment Dashboard - Obuildings',
+    'currentPage' => 'payments',
+    'additionalCSS' => ['css/user-dashboard.css', 'css/payments.css'],
+    'additionalMeta' => [],
+    'additionalJS' => ['js/payments.js', 'js/pay-stripe.js']
+];
+
+// Render page header
+PageRenderer::renderPageHeader($pageConfig['title'], $pageConfig['currentPage'], $pageConfig['additionalCSS'], $pageConfig['additionalMeta']);
 ?>
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment Dashboard - Obuildings</title>
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <!-- Custom Styles -->
-    <link rel="stylesheet" href="css/user-dashboard.css">
-</head>
-
-<body class="user-dashboard">
-    <nav class="navbar navbar-expand-lg navbar-dark navbar-modern">
-        <div class="container">
-            <a class="navbar-brand" href="homepage.php">
-                <i class="fas fa-building mr-2"></i>Obuildings
-            </a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="homepage.php">
-                            <i class="fas fa-home mr-1"></i>Home
-                        </a>
-                    </li>
-                    <li class="nav-item active">
-                        <a class="nav-link" href="payments.php">
-                            <i class="fas fa-credit-card mr-1"></i>Payments<span class="sr-only">(current)</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="announces.php">
-                            <i class="fas fa-bullhorn mr-1"></i>Announces
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="logout.php">
-                            <i class="fas fa-sign-out-alt mr-1"></i>Logout
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
     <?php
     require_once 'classes/payments.class.php';
     require_once 'functions/extractMonthAndYear.php';
@@ -176,7 +139,7 @@ if (!isset($_SESSION['resident_id']) || !isset($_SESSION['status']) || $_SESSION
     <div class="container my-4">
         <div class="glass-container p-4">
             <div class="welcome-text text-center">
-                <h1><i class="fas fa-credit-card mr-3"></i>Payment Dashboard</h1>
+                <h1><i class="fas fa-credit-card me-3"></i>Payment Dashboard</h1>
                 <p class="lead">Welcome back, <?php echo $_SESSION['fName'] . ' ' . $_SESSION['lName']; ?>!</p>
             </div>
             
@@ -186,7 +149,7 @@ if (!isset($_SESSION['resident_id']) || !isset($_SESSION['status']) || $_SESSION
                     <div class="card stat-card border-0 h-100 bg-gradient-success">
                         <div class="card-body text-center text-white">
                             <i class="fas fa-check-circle fa-2x mb-2"></i>
-                            <div class="display-4 font-weight-bold"><?php echo count($payments); ?></div>
+                            <div class="display-4 fw-bold"><?php echo count($payments); ?></div>
                             <p class="mb-0">Paid Months</p>
                             <small class="text-white-50"><?php echo number_format($totalPaidAmount); ?> MAD</small>
                         </div>
@@ -196,7 +159,7 @@ if (!isset($_SESSION['resident_id']) || !isset($_SESSION['status']) || $_SESSION
                     <div class="card stat-card border-0 h-100 bg-gradient-danger">
                         <div class="card-body text-center text-white">
                             <i class="fas fa-exclamation-triangle fa-2x mb-2"></i>
-                            <div class="display-4 font-weight-bold"><?php echo $totalUnpaidMonths; ?></div>
+                            <div class="display-4 fw-bold"><?php echo $totalUnpaidMonths; ?></div>
                             <p class="mb-0">Unpaid Months</p>
                             <small class="text-white-50"><?php echo number_format($totalAmountToPay); ?> MAD</small>
                         </div>
@@ -206,7 +169,7 @@ if (!isset($_SESSION['resident_id']) || !isset($_SESSION['status']) || $_SESSION
                     <div class="card stat-card border-0 h-100 bg-gradient-warning">
                         <div class="card-body text-center text-white">
                             <i class="fas fa-clock fa-2x mb-2"></i>
-                            <div class="display-4 font-weight-bold"><?php echo count($overdueMonths); ?></div>
+                            <div class="display-4 fw-bold"><?php echo count($overdueMonths); ?></div>
                             <p class="mb-0">Overdue Months</p>
                             <small class="text-white-50"><?php echo number_format($overdueAmount); ?> MAD</small>
                         </div>
@@ -216,7 +179,7 @@ if (!isset($_SESSION['resident_id']) || !isset($_SESSION['status']) || $_SESSION
                     <div class="card stat-card border-0 h-100 bg-gradient-info">
                         <div class="card-body text-center text-white">
                             <i class="fas fa-percentage fa-2x mb-2"></i>
-                            <div class="display-4 font-weight-bold"><?php echo round($completionPercentage); ?>%</div>
+                            <div class="display-4 fw-bold"><?php echo round($completionPercentage); ?>%</div>
                             <p class="mb-0">Completion Rate</p>
                             <small class="text-white-50">Payment Progress</small>
                         </div>
@@ -253,18 +216,18 @@ if (!isset($_SESSION['resident_id']) || !isset($_SESSION['status']) || $_SESSION
                     </span>
                     <div class="payment-amount text-white"><?php echo number_format($totalAmountToPay); ?> MAD</div>
                     <div class="mt-3">
-                        <a href="pay.php" class="btn btn-pay btn-lg px-4 mr-3">
-                            <i class="fas fa-credit-card mr-2"></i>Pay Next Month
+                        <a href="pay.php" class="btn btn-pay btn-lg px-4 me-3">
+                            <i class="fas fa-credit-card me-2"></i>Pay Next Month
                         </a>
                         <?php if (count($unpaidMonths) > 1) : ?>
                             <a href="pay.php?pay_all=1" class="btn btn-success btn-lg px-4">
-                                <i class="fas fa-credit-card mr-2"></i>Pay All (<?php echo count($unpaidMonths) ?> months)
+                                <i class="fas fa-credit-card me-2"></i>Pay All (<?php echo count($unpaidMonths) ?> months)
                             </a>
                         <?php endif; ?>
                     </div>
                     <small class="text-white-50 mt-2 d-block">
                         <?php if (count($overdueMonths) > 0) : ?>
-                            <i class="fas fa-exclamation-circle mr-1"></i>
+                            <i class="fas fa-exclamation-circle me-1"></i>
                             <?php echo count($overdueMonths) ?> month<?php echo count($overdueMonths) > 1 ? 's' : '' ?> overdue
                         <?php endif; ?>
                     </small>
@@ -286,7 +249,7 @@ if (!isset($_SESSION['resident_id']) || !isset($_SESSION['status']) || $_SESSION
                     <div class="row align-items-center">
                         <div class="col-md-6">
                             <h4 class="mb-0">
-                                <i class="fas fa-history mr-2"></i>Complete Payment History
+                                <i class="fas fa-history me-2"></i>Complete Payment History
                             </h4>
                         </div>
                         <div class="col-md-6">
@@ -312,9 +275,9 @@ if (!isset($_SESSION['resident_id']) || !isset($_SESSION['status']) || $_SESSION
                                 <div class="col-md-12">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div class="quick-filters">
-                                            <button class="btn btn-sm btn-outline-primary mr-1" data-filter="recent">Recent</button>
-                                            <button class="btn btn-sm btn-outline-danger mr-1" data-filter="overdue">Overdue</button>
-                                            <button class="btn btn-sm btn-outline-success mr-1" data-filter="paid">Paid</button>
+                                            <button class="btn btn-sm btn-outline-primary me-1" data-filter="recent">Recent</button>
+                                            <button class="btn btn-sm btn-outline-danger me-1" data-filter="overdue">Overdue</button>
+                                            <button class="btn btn-sm btn-outline-success me-1" data-filter="paid">Paid</button>
                                             <button class="btn btn-sm btn-outline-secondary" id="clearFilters">Clear All</button>
                                         </div>
                                         <div class="search-counter">
@@ -331,12 +294,12 @@ if (!isset($_SESSION['resident_id']) || !isset($_SESSION['status']) || $_SESSION
                         <table class="table table-hover mb-0" id="paymentTable">
                             <thead>
                                 <tr class="table-header-solid">
-                                    <th class="border-0"><i class="fas fa-calendar mr-2"></i>Month/Year</th>
-                                    <th class="border-0"><i class="fas fa-info-circle mr-2"></i>Status</th>
-                                    <th class="border-0"><i class="fas fa-money-bill mr-2"></i>Amount</th>
-                                    <th class="border-0"><i class="fas fa-clock mr-2"></i>Due Date</th>
-                                    <th class="border-0"><i class="fas fa-receipt mr-2"></i>Transaction ID</th>
-                                    <th class="border-0"><i class="fas fa-cog mr-2"></i>Actions</th>
+                                    <th class="border-0"><i class="fas fa-calendar me-2"></i>Month/Year</th>
+                                    <th class="border-0"><i class="fas fa-info-circle me-2"></i>Status</th>
+                                    <th class="border-0"><i class="fas fa-money-bill me-2"></i>Amount</th>
+                                    <th class="border-0"><i class="fas fa-clock me-2"></i>Due Date</th>
+                                    <th class="border-0"><i class="fas fa-receipt me-2"></i>Transaction ID</th>
+                                    <th class="border-0"><i class="fas fa-cog me-2"></i>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -363,12 +326,12 @@ if (!isset($_SESSION['resident_id']) || !isset($_SESSION['status']) || $_SESSION
                                         <td>
                                             <strong><?php echo $month['month_name'] . ' ' . $month['year']; ?></strong>
                                             <?php if ($month['is_overdue']) : ?>
-                                                <br><small class="text-danger"><i class="fas fa-exclamation-circle mr-1"></i>Overdue</small>
+                                                <br><small class="text-danger"><i class="fas fa-exclamation-circle me-1"></i>Overdue</small>
                                             <?php endif; ?>
                                         </td>
                                         <td>
                                             <span class="badge badge-<?php echo $statusClass; ?>">
-                                                <i class="fas fa-<?php echo $statusIcon; ?> mr-1"></i><?php echo $statusText; ?>
+                                                <i class="fas fa-<?php echo $statusIcon; ?> me-1"></i><?php echo $statusText; ?>
                                             </span>
                                         </td>
                                         <td>
@@ -392,11 +355,11 @@ if (!isset($_SESSION['resident_id']) || !isset($_SESSION['status']) || $_SESSION
                                             <?php if ($month['status'] == 'unpaid') : ?>
                                                 <a href="pay.php?month=<?php echo $month['month']; ?>&year=<?php echo $month['year']; ?>" 
                                                    class="btn btn-sm btn-outline-primary">
-                                                    <i class="fas fa-credit-card mr-1"></i>Pay
+                                                    <i class="fas fa-credit-card me-1"></i>Pay
                                                 </a>
                                             <?php else : ?>
                                                 <span class="text-success">
-                                                    <i class="fas fa-check-circle mr-1"></i>Completed
+                                                    <i class="fas fa-check-circle me-1"></i>Completed
                                                 </span>
                                             <?php endif; ?>
                                         </td>
@@ -410,10 +373,7 @@ if (!isset($_SESSION['resident_id']) || !isset($_SESSION['status']) || $_SESSION
         </div>
     </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Scripts will be loaded by PageRenderer -->
     
     <!-- Enhanced JavaScript for advanced features -->
     <script>
@@ -635,7 +595,11 @@ if (!isset($_SESSION['resident_id']) || !isset($_SESSION['status']) || $_SESSION
             });
             
             // Add tooltips to overdue items
-            $('[data-toggle="tooltip"]').tooltip();
+            // Bootstrap 5 tooltip initialization
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
             
             // Auto-refresh payment status every 5 minutes
             setInterval(function() {
@@ -644,6 +608,8 @@ if (!isset($_SESSION['resident_id']) || !isset($_SESSION['status']) || $_SESSION
             }, 300000);
         });
     </script>
-</body>
 
-</html>
+<?php
+    // Render page footer
+    PageRenderer::renderPageFooter($pageConfig['additionalJS']);
+?>

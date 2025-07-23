@@ -1,7 +1,7 @@
 <?php
 
 // Include database configuration
-require_once __DIR__ . '/db-config.php';
+require_once __DIR__ . '/../config/db-config.php';
 
 class DB
 {
@@ -23,14 +23,22 @@ class DB
 
     public function connect()
     {
+        // Reuse existing connection if available
+        if ($this->conn !== null) {
+            return $this->conn;
+        }
+        
         try {
             $dsn = "mysql:host={$this->host};dbname={$this->dbname};charset=utf8mb4";
             $this->conn = new PDO($dsn, $this->username, $this->password);
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $this->conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+            // Enable query caching for better performance
+            $this->conn->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
             return $this->conn;
         } catch (PDOException $e) {
-            die("Connection failed: " . $e->getMessage());
+            error_log("Database connection failed: " . $e->getMessage());
+            die("Connection failed. Please try again later.");
         }
     }
 

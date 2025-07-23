@@ -4,7 +4,7 @@ require_once 'vendor/autoload.php';
 // Force local environment for WebSocket server
 putenv('APP_ENV=local');
 
-require_once 'classes/db-config.php';
+require_once 'config/db-config.php';
 require_once 'classes/websocket.class.php';
 
 // Debug: Show database configuration

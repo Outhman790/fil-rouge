@@ -22,83 +22,47 @@ $offset = ($currentpage - 1) * $itemsPerPage;
 
 $purchases = $purchasesObj->getAllPurchases($offset, $itemsPerPage);
 if (isset($_SESSION['status']) && $_SESSION['status'] === 'Resident') {
+    // Include PageRenderer
+    require_once 'render/page-renderer.php';
+    
+    // Page configuration
+    $pageConfig = [
+        'title' => 'Home - Obuildings',
+        'currentPage' => 'home',
+        'additionalCSS' => ['css/user-dashboard.css'],
+        'additionalMeta' => [],
+        'additionalJS' => ['js/homepage.js']
+    ];
+    
+    // Render page header
+    PageRenderer::renderPageHeader($pageConfig['title'], $pageConfig['currentPage'], $pageConfig['additionalCSS'], $pageConfig['additionalMeta']);
 ?>
-    <!DOCTYPE html>
-    <html lang="en">
-
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Home - Obuildings</title>
-        <!-- Include Bootstrap CSS -->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-        <!-- Custom Styles -->
-        <link rel="stylesheet" href="css/user-dashboard.css">
-    </head>
-
-    <body class="user-dashboard">
-        <nav class="navbar navbar-expand-lg navbar-dark navbar-modern">
-            <div class="container">
-                <a class="navbar-brand" href="homepage.php">
-                    <i class="fas fa-building mr-2"></i>Obuildings
-                </a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ml-auto">
-                        <li class="nav-item active">
-                            <a class="nav-link" href="homepage.php">
-                                <i class="fas fa-home mr-1"></i>Home <span class="sr-only">(current)</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="payments.php">
-                                <i class="fas fa-credit-card mr-1"></i>Payments
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="announces.php">
-                                <i class="fas fa-bullhorn mr-1"></i>Announces
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="logout.php">
-                                <i class="fas fa-sign-out-alt mr-1"></i>Logout
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
 
         <div class="container my-4">
             <div class="glass-container p-4">
                 <div class="welcome-text text-center mb-4">
-                    <h1><i class="fas fa-home mr-3"></i>Welcome Home!</h1>
+                    <h1><i class="fas fa-home me-3"></i>Welcome Home!</h1>
                     <p class="lead">Hello, <?php echo htmlspecialchars($_SESSION['fName'] . ' ' . $_SESSION['lName']) ?>!</p>
                     <p class="text-muted">Thank you for using Obuildings.</p>
                     <a href="payments.php" class="btn btn-pay btn-lg px-4">
-                        <i class="fas fa-credit-card mr-2"></i>View Payments
+                        <i class="fas fa-credit-card me-2"></i>View Payments
                     </a>
                 </div>
 
                 <hr class="my-4">
 
                 <h2 class="text-center mb-4">
-                    <i class="fas fa-shopping-cart mr-2"></i>Building Expenses
+                    <i class="fas fa-shopping-cart me-2"></i>Building Expenses
                 </h2>
                 <div class="card table-modern border-0">
                     <table class="table table-hover mb-0">
                         <thead>
                             <tr class="table-header-solid">
-                                <th class="border-0"><i class="fas fa-tag mr-2"></i>Name</th>
-                                <th class="border-0"><i class="fas fa-info-circle mr-2"></i>Description</th>
-                                <th class="border-0"><i class="fas fa-image mr-2"></i>Invoice Image</th>
-                                <th class="border-0"><i class="fas fa-money-bill mr-2"></i>Amount</th>
-                                <th class="border-0"><i class="fas fa-calendar mr-2"></i>Spending Date</th>
+                                <th class="border-0"><i class="fas fa-tag me-2"></i>Name</th>
+                                <th class="border-0"><i class="fas fa-info-circle me-2"></i>Description</th>
+                                <th class="border-0"><i class="fas fa-image me-2"></i>Invoice Image</th>
+                                <th class="border-0"><i class="fas fa-money-bill me-2"></i>Amount</th>
+                                <th class="border-0"><i class="fas fa-calendar me-2"></i>Spending Date</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -107,7 +71,7 @@ if (isset($_SESSION['status']) && $_SESSION['status'] === 'Resident') {
                                     <td><?php echo htmlspecialchars($purchase['name']); ?></td>
                                     <td><?php echo htmlspecialchars($purchase['description']); ?></td>
                                     <td>
-                                        <a href="includes/uploads/<?php echo htmlspecialchars($purchase['invoice']) ?>" data-toggle="modal" data-target="#imageModal">
+                                        <a href="includes/uploads/<?php echo htmlspecialchars($purchase['invoice']) ?>" data-bs-toggle="modal" data-bs-target="#imageModal">
                                             <img src="includes/uploads/<?php echo htmlspecialchars($purchase['invoice']) ?>" alt="Invoice Image" height="100">
                                         </a>
                                     </td>
@@ -144,13 +108,10 @@ if (isset($_SESSION['status']) && $_SESSION['status'] === 'Resident') {
             </div>
         </div>
         <!--End Image Modal -->
-        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script>
-        <script src="js/homepage.js"></script>
-    </body>
-
-    </html>
+        
 <?php
+    // Render page footer
+    PageRenderer::renderPageFooter($pageConfig['additionalJS']);
 } elseif (isset($_SESSION['status']) && $_SESSION['status'] === 'Admin') {
     header('location: index.php');
 } else {

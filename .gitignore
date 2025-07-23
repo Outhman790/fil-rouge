@@ -1,2 +1,67 @@
+# Environment and configuration files
+.env
+.env.*
+!.env.example
+
+# Database files
+*.sql
+!db/performance_indexes.sql
+db/*.sql
+!db/sandik.sql
+
+# Upload directories
+uploads/
+!uploads/.gitkeep
+
+# Vendor dependencies
 /vendor/
+node_modules/
+
+# Claude files
 .claude/
+
+# Logs
+*.log
+logs/
+
+# Cache files
+cache/
+*.cache
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Backup files
+*.backup
+*.bak
+*.orig
+
+# Test files (keep production clean)
+test-*.php
+*-test.php
+debug.php
+production-debug.php
+
+# Sensitive files
+config/production.php
+*.key
+*.pem
+*.p12

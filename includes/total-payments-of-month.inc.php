@@ -6,11 +6,13 @@ if (isset($_SESSION['resident_id']) && $_SESSION['status'] == 'Admin') {
     $currentMonth = (int)date('n');
     $admin = new Admin();
 
+    // Optimized: Get all monthly totals in a single database query
+    $allMonthlyTotals = $admin->getAllMonthlyPaymentTotals($currentYear, $currentMonth);
+    
+    // Format the result to maintain backward compatibility
     $totalPayments = [];
-    // Calculating total amount of payments for each month before the current month
     for ($i = $currentMonth; $i >= 1; $i--) {
-        $totalPayment = $admin->getTotalPaimentsOfMonthAndYear($i, $currentYear);
-        $totalPayments[$i] = $totalPayment;
+        $totalPayments[$i] = $allMonthlyTotals[$i];
     }
     header('Content-Type: application/json');
 

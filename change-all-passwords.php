@@ -2,7 +2,7 @@
 // change-all-passwords.php
 // Standalone script to update all user passwords except admin
 
-require_once __DIR__ . '/classes/db-config.php';
+require_once __DIR__ . '/config/db-config.php';
 
 try {
     // Connect to the database

@@ -114,11 +114,11 @@ if (!empty($currentUnpaidMonths)) {
     <!-- jQuery FIRST -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <!-- FontAwesome -->
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!-- Bootstrap JS (after jQuery) -->
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
     <title>Payment made successfully</title>
 </head>
 
@@ -131,7 +131,7 @@ if (!empty($currentUnpaidMonths)) {
                     <div class="rounded-circle bg-white mb-3 d-flex align-items-center justify-content-center" style="width: 70px; height: 70px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
                         <i class="fas fa-check-circle fa-3x text-success animate__animated animate__bounceIn"></i>
                     </div>
-                    <h4 class="modal-title w-100 text-center font-weight-bold" id="paymentSuccessModalLabel">Payment Successful!</h4>
+                    <h4 class="modal-title w-100 text-center fw-bold" id="paymentSuccessModalLabel">Payment Successful!</h4>
                 </div>
                 <div class="modal-body text-center py-4">
                     <p class="lead mb-2">
@@ -145,7 +145,7 @@ if (!empty($currentUnpaidMonths)) {
                     </p>
                     <div class="mb-3">
                         <span class="badge badge-success p-2" style="font-size: 1rem;">Transaction ID:</span>
-                        <span class="font-weight-bold text-dark ml-2" style="word-break: break-all;"> <?php echo $checkoutSession->payment_intent; ?> </span>
+                        <span class="fw-bold text-dark ms-2" style="word-break: break-all;"> <?php echo $checkoutSession->payment_intent; ?> </span>
                     </div>
                     <a href="homepage.php" class="btn btn-lg btn-primary mt-2 px-5 shadow-sm">Back to Homepage</a>
                 </div>
@@ -155,7 +155,8 @@ if (!empty($currentUnpaidMonths)) {
 
     <script>
         $(document).ready(function() {
-            $('#paymentSuccessModal').modal('show');
+            var modal = new bootstrap.Modal(document.getElementById('paymentSuccessModal'));
+            modal.show();
         });
     </script>
 </body>

@@ -1,7 +1,13 @@
 // Toggle the side navigation
 window.addEventListener("DOMContentLoaded", (event) => {
+  // Sidebar toggle functionality
   const sidebarToggle = document.body.querySelector("#sidebarToggle");
   if (sidebarToggle) {
+    // If localStorage has stored toggle state, apply it
+    if (localStorage.getItem("sb|sidebar-toggle") === "true") {
+      document.body.classList.add("sb-sidenav-toggled");
+    }
+    
     sidebarToggle.addEventListener("click", (event) => {
       event.preventDefault();
       document.body.classList.toggle("sb-sidenav-toggled");

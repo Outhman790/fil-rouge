@@ -291,7 +291,7 @@ PageRenderer::renderPageHeader($pageConfig['title'], $pageConfig['currentPage'],
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
-                        <table class="table table-hover mb-0" id="paymentTable">
+                        <table class="custom-payment-table" id="paymentTable">
                             <thead>
                                 <tr class="table-header-solid">
                                     <th class="border-0"><i class="fas fa-calendar me-2"></i>Month/Year</th>
@@ -338,27 +338,30 @@ PageRenderer::renderPageHeader($pageConfig['title'], $pageConfig['currentPage'],
                                             <strong><?php echo number_format($month['amount']); ?> MAD</strong>
                                         </td>
                                         <td>
-                                            <small class="text-muted">
+                                            <div class="due-date-cell <?php echo $month['is_overdue'] ? 'due-date-overdue' : ''; ?>">
+                                                <i class="fas fa-calendar-alt me-1"></i>
                                                 <?php echo date('M j, Y', strtotime($month['due_date'])); ?>
-                                            </small>
+                                            </div>
                                         </td>
                                         <td>
                                             <?php if ($month['transaction_id']) : ?>
-                                                <span class="badge badge-light transaction-id">
-                                                    <?php echo substr($month['transaction_id'], 0, 15) . '...'; ?>
+                                                <span class="badge badge-light transaction-id" title="<?php echo htmlspecialchars($month['transaction_id']); ?>">
+                                                    <i class="fas fa-receipt me-1"></i>
+                                                    <?php echo strlen($month['transaction_id']) > 12 ? substr($month['transaction_id'], 0, 12) . '...' : $month['transaction_id']; ?>
                                                 </span>
                                             <?php else : ?>
-                                                <span class="text-muted">-</span>
+                                                <span class="text-muted"><i class="fas fa-minus"></i></span>
                                             <?php endif; ?>
                                         </td>
                                         <td>
                                             <?php if ($month['status'] == 'unpaid') : ?>
                                                 <a href="pay.php?month=<?php echo $month['month']; ?>&year=<?php echo $month['year']; ?>" 
-                                                   class="btn btn-sm btn-outline-primary">
-                                                    <i class="fas fa-credit-card me-1"></i>Pay
+                                                   class="btn btn-sm btn-outline-primary"
+                                                   title="Pay for <?php echo $month['month_name'] . ' ' . $month['year']; ?>">
+                                                    <i class="fas fa-credit-card me-1"></i>Pay Now
                                                 </a>
                                             <?php else : ?>
-                                                <span class="text-success">
+                                                <span class="payment-completed">
                                                     <i class="fas fa-check-circle me-1"></i>Completed
                                                 </span>
                                             <?php endif; ?>

@@ -40,6 +40,25 @@ document.addEventListener("DOMContentLoaded", function () {
         .closest(".update-btn-resident")
         .getAttribute("data-resident-id");
       document.getElementById("residentIdInput").value = residentId;
+      
+      // Fetch resident data and populate form
+      fetch(`includes/get-resident.inc.php?resident_id=${residentId}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            // Populate form fields with resident data
+            document.getElementById("fNameInput").value = data.data.fName;
+            document.getElementById("lNameInput").value = data.data.lName;
+            document.getElementById("email_Input").value = data.data.email;
+            document.getElementById("username_Input").value = data.data.username;
+            // Note: We don't populate password field for security reasons
+          } else {
+            console.error('Error fetching resident data:', data.error);
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
     }
   });
 });

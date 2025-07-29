@@ -14,14 +14,21 @@ if (isset($_SESSION['resident_id'])) :
             <meta name="description" content="" />
             <meta name="author" content="" />
             <title>Dashboard - Admin</title>
-            <linkindex href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
+            <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
             <link href="css/styles.css" rel="stylesheet" />
+            <style>
+                /* Bootstrap 5 compatibility fixes */
+                .form-group { margin-bottom: 1rem; }
+                .btn-block { width: 100%; }
+                .ml-auto { margin-left: auto !important; }
+                .mr-auto { margin-right: auto !important; }
+            </style>
 
 
             <!-- Include jQuery -->
             <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-            <!-- Include Bootstrap CSS -->
-            <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+            <!-- Include Bootstrap 5 CSS -->
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
             <!-- Include Font Awesome -->
             <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
         </head>
@@ -31,11 +38,18 @@ if (isset($_SESSION['resident_id'])) :
                 <!-- Navbar Brand-->
                 <a class="navbar-brand ps-3" href="index.php">Obuildings</a>
                 <!-- Sidebar Toggle-->
-                <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!">
+                <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle">
                     <i class="fas fa-bars"></i>
                 </button>
+                <!-- Navbar Search-->
+                <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
+                    <div class="input-group">
+                        <input class="form-control" type="text" placeholder="Search for..." aria-label="Search for..." aria-describedby="btnNavbarSearch" />
+                        <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button>
+                    </div>
+                </form>
                 <!-- Navbar-->
-                <ul class="navbar-nav ml-auto">
+                <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fas fa-user fa-fw"></i>
@@ -43,9 +57,7 @@ if (isset($_SESSION['resident_id'])) :
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                             <li><a class="dropdown-item" href="#!">Settings</a></li>
                             <li><a class="dropdown-item" href="#!">Activity Log</a></li>
-                            <li>
-                                <hr class="dropdown-divider" />
-                            </li>
+                            <li><hr class="dropdown-divider" /></li>
                             <li><a class="dropdown-item" href="logout.php">Logout</a></li>
                         </ul>
                     </li>
@@ -156,10 +168,10 @@ if (isset($_SESSION['resident_id'])) :
                             </div>
                             <div class="card mb-4">
                                 <div class="card-header d-flex justify-content-between">
-                                    <disv>
+                                    <div>
                                         <i class="fas fa-table me-1"></i>
                                         Residents Info
-                                    </disv>
+                                    </div>
                                     <button type="button" class="btn btn-success btn-add" data-bs-toggle="modal" data-bs-target="#addResidentModal">Add Resident</button>
                                 </div>
                                 <div class="card-body">
@@ -226,27 +238,27 @@ if (isset($_SESSION['resident_id'])) :
                                     </div>
                                     <form id="add-resident-form">
                                         <div class="modal-body">
-                                            <div class="form-group">
+                                            <div class="mb-3">
                                                 <label for="firstNameInput">First Name</label>
                                                 <input name="fName" type="text" class="form-control" id="firstNameInput" placeholder="Enter first name" required>
                                                 <span class="form-text text-danger"></span>
                                             </div>
-                                            <div class="form-group">
+                                            <div class="mb-3">
                                                 <label for="lastNameInput">Last Name</label>
                                                 <input name="lName" type="text" class="form-control" id="lastNameInput" placeholder="Enter last name" required>
                                                 <span class="form-text text-danger"></span>
                                             </div>
-                                            <div class="form-group">
+                                            <div class="mb-3">
                                                 <label for="emailInput">Email</label>
                                                 <input name="email" type="email" class="form-control" id="emailInput" placeholder="Enter email" required>
                                                 <span class="form-text text-danger"></span>
                                             </div>
-                                            <div class="form-group">
+                                            <div class="mb-3">
                                                 <label for="passwordInput">Password</label>
                                                 <input name="password" type="password" class="form-control" id="passwordInput" placeholder="Enter password" required>
                                                 <span class="form-text text-danger"></span>
                                             </div>
-                                            <div class="form-group">
+                                            <div class="mb-3">
                                                 <label for="usernameInput">Username</label>
                                                 <input name="username" type="text" class="form-control" id="usernameInput" placeholder="Enter username" required>
                                                 <span class="form-text text-danger"></span>
@@ -324,27 +336,27 @@ if (isset($_SESSION['resident_id'])) :
                                     <form id="add-resident-form" method="POST" action="includes/update-resident.inc.php">
                                         <input type="hidden" name="resident_id" id="residentIdInput">
                                         <div class="modal-body">
-                                            <div class="form-group">
+                                            <div class="mb-3">
                                                 <label for="firstNameInput">First Name</label>
                                                 <input name="fName" type="text" class="form-control" id="fNameInput" placeholder="Enter first name" required>
                                                 <span class="form-text text-danger"></span>
                                             </div>
-                                            <div class="form-group">
+                                            <div class="mb-3">
                                                 <label for="lastNameInput">Last Name</label>
                                                 <input name="lName" type="text" class="form-control" id="lNameInput" placeholder="Enter last name" required>
                                                 <span class="form-text text-danger"></span>
                                             </div>
-                                            <div class="form-group">
+                                            <div class="mb-3">
                                                 <label for="emailInput">Email</label>
                                                 <input name="email" type="email" class="form-control" id="email_Input" placeholder="Enter email" required>
                                                 <span class="form-text text-danger"></span>
                                             </div>
-                                            <div class="form-group">
+                                            <div class="mb-3">
                                                 <label for="passwordInput">Password</label>
                                                 <input name="password" type="password" class="form-control" id="password_Input" placeholder="Enter password" required>
                                                 <span class="form-text text-danger"></span>
                                             </div>
-                                            <div class="form-group">
+                                            <div class="mb-3">
                                                 <label for="usernameInput">Username</label>
                                                 <input name="username" type="text" class="form-control" id="username_Input" placeholder="Enter username" required>
                                                 <span class="form-text text-danger"></span>
@@ -387,7 +399,7 @@ if (isset($_SESSION['resident_id'])) :
                             </div>
                             <div class="card-body">
                                 <table class="table table-bordered table-hover text-center">
-                                    <thead class="thead-dark">
+                                    <thead class="table-dark">
                                         <tr>
                                             <th>Name</th>
                                             <th>Description</th>
@@ -509,25 +521,18 @@ if (isset($_SESSION['resident_id'])) :
                                 });
                             });
                         </script>
+                        </div>
+                    </main>
                 </div>
             </div>
-            </main>
-            <footer class="py-4 bg-light mt-4">
+            <footer class="py-4 bg-light">
                 <div class="container-fluid px-4">
-                    <div class="d-flex align-items-center justify-content-between small">
+                    <div class="text-center small">
                         <div class="text-danger">Copyright &copy; Your Website 2023</div>
-                        <div>
-                            <a href="#">Privacy Policy</a>
-                            &middot;
-                            <a href="#">Terms &amp; Conditions</a>
-                        </div>
                     </div>
                 </div>
             </footer>
-            </div>
-            </div>
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous">
-            </script>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
             <script src="js/scripts.js"></script>
             <script src="js/add-resident.js"></script>
             <script src="js/delete-resident.js"></script>

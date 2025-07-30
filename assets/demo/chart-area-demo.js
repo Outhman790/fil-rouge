@@ -3,7 +3,7 @@ Chart.defaults.global.defaultFontFamily =
   '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
 Chart.defaults.global.defaultFontColor = "#292b2c";
 // Send a fetch request to the PHP file
-fetch("includes/expenses-amount.php")
+fetch("includes/expenses-amount.php?v=" + Date.now())
   .then((response) => response.json())
   .then((data) => {
     let chartData = data;

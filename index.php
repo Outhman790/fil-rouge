@@ -528,7 +528,7 @@ if (isset($_SESSION['resident_id'])) :
             <footer class="py-4 bg-light">
                 <div class="container-fluid px-4">
                     <div class="text-center small">
-                        <div class="text-danger">Copyright &copy; Your Website 2023</div>
+                        <div class="text-danger">Copyright &copy; Your Website <?php echo date('Y'); ?> - <?php echo date('F j, Y'); ?></div>
                     </div>
                 </div>
             </footer>

@@ -7,7 +7,7 @@ Chart.defaults.global.defaultFontColor = "#292b2c";
 var ctx = document.getElementById("myBarChart");
 
 // Fetch data from total-payments-of-month.inc.php
-fetch("includes/total-payments-of-month.inc.php")
+fetch("includes/total-payments-of-month.inc.php?v=" + Date.now())
   .then((response) => response.json())
   .then((data) => {
     console.log(data);

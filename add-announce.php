@@ -62,9 +62,15 @@ if (isset($_SESSION['resident_id']) && $_SESSION['status'] == 'Admin') {
 
                             <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages" style="margin-left:0.75rem">
                                 <a class="nav-link" href="add-expense.php">
+                                    <div class="sb-nav-link-icon">
+                                        <i class="fas fa-receipt"></i>
+                                    </div>
                                     Add Expense
                                 </a>
                                 <a class="nav-link" href="add-announce.php">
+                                    <div class="sb-nav-link-icon">
+                                        <i class="fas fa-bullhorn"></i>
+                                    </div>
                                     Add Announce
                                 </a>
                             </nav>

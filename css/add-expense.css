@@ -154,6 +154,11 @@ body {
   pointer-events: none;
 }
 
+.form-floating .input-icon {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
 .file-upload-area {
   border: 2px dashed #667eea;
   border-radius: 15px;
@@ -253,12 +258,46 @@ body {
 
 .amount-currency {
   position: absolute;
-  right: 45px;
+  right: 20px;
   top: 50%;
   transform: translateY(-50%);
   color: #667eea;
   font-weight: 600;
   z-index: 5;
+  pointer-events: none;
+}
+
+.form-floating .amount-currency {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* Better alignment for floating form icons */
+.form-floating .form-control {
+  height: 58px;
+  line-height: 1.25;
+  padding: 1rem 50px 1rem 1rem;
+}
+
+/* Force icons to center of input field */
+.form-floating .input-icon {
+  position: absolute;
+  right: 15px;
+  top: 29px;
+  transform: translateY(-50%);
+  color: #667eea;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.form-floating .amount-currency {
+  position: absolute;
+  right: 20px;
+  top: 29px;
+  transform: translateY(-50%);
+  color: #667eea;
+  font-weight: 600;
+  z-index: 10;
   pointer-events: none;
 }
 

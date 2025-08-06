@@ -66,29 +66,18 @@ if (!empty($currentUnpaidMonths)) {
         echo "<script>console.log('Bulk Payment Processing:', " . json_encode($debugInfo) . ");</script>";
         
     } else {
-        // Handle single payment
-        $paymentYear = $currentYear;
+        // Handle single payment - use the first unpaid month data
+        $firstUnpaidMonth = $currentUnpaidMonths[0];
+        $paymentMonth = $firstUnpaidMonth['month'];
+        $paymentYear = $firstUnpaidMonth['year'];
         
-        // If the next payment month is greater than current month, it could be from previous year
-        if ($latestPayment && $nextPaymentMonth > $currentMonth) {
-            $lastPaidYear = (int)$latestPayment['payment_year'];
-            if ($lastPaidYear < $currentYear) {
-                $paymentYear = $lastPaidYear;
-            }
-        }
-        
-        // For new users, if paying for a future month in registration year
-        if (!$latestPayment && $nextPaymentMonth > $currentMonth && $joinedIn['year'] < $currentYear) {
-            $paymentYear = $joinedIn['year'];
-        }
-        
-        // Add the payment
-        $success = $paymentsInsert->addPayment($nextPaymentMonth, $paymentYear, $checkoutSession->payment_intent, $_SESSION['resident_id']);
+        // Add the payment using the correct month and year from earliest unpaid month
+        $success = $paymentsInsert->addPayment($paymentMonth, $paymentYear, $checkoutSession->payment_intent, $_SESSION['resident_id']);
         
         // Debug info for single payment
         $debugInfo = [
             'payment_type' => 'single',
-            'next_payment_month' => $nextPaymentMonth,
+            'payment_month' => $paymentMonth,
             'payment_year' => $paymentYear,
             'transaction_id' => $checkoutSession->payment_intent,
             'success' => $success
@@ -139,7 +128,8 @@ if (!empty($currentUnpaidMonths)) {
                         if ($payAll && !empty($currentUnpaidMonths)) {
                             echo ' for ' . count($currentUnpaidMonths) . ' months';
                         } else {
-                            echo ' for Month ' . $nextPaymentMonth;
+                            $firstUnpaid = $currentUnpaidMonths[0] ?? null;
+                            echo ' for ' . ($firstUnpaid ? 'Month ' . $firstUnpaid['month'] . ' ' . $firstUnpaid['year'] : 'Current Month');
                         }
                         ?>.
                     </p>

@@ -21,6 +21,10 @@ use Ratchet\Server\IoServer;
 use Ratchet\Http\HttpServer;
 use Ratchet\WebSocket\WsServer;
 use React\Socket\Server as ReactServer;
+use React\EventLoop\Loop;
+
+// Create event loop
+$loop = Loop::get();
 
 // Create the WebSocket server components
 $webSocketComponent = new AnnouncementsWebSocket();
@@ -28,8 +32,8 @@ $webSocketServer = new WsServer($webSocketComponent);
 $httpServer = new HttpServer($webSocketServer);
 
 // Create React socket server that explicitly binds to all interfaces
-$reactSocket = new ReactServer('0.0.0.0:8080');
-$server = new IoServer($httpServer, $reactSocket);
+$reactSocket = new ReactServer('0.0.0.0:8080', $loop);
+$server = new IoServer($httpServer, $reactSocket, $loop);
 
 echo "WebSocket server started on port 8080\n";
 echo "Press Ctrl+C to stop the server\n";

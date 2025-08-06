@@ -140,7 +140,4 @@ class AnnouncementsWebSocket implements MessageComponentInterface
     }
 }
 
-// Run the WebSocket server
-$server = new \Ratchet\App('localhost', 8080);
-$server->route('/', new AnnouncementsWebSocket(), ['*']);
-$server->run();
+// Server startup code moved to websocket-server.php

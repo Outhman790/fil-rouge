@@ -20,17 +20,16 @@ echo "------------------------\n";
 use Ratchet\Server\IoServer;
 use Ratchet\Http\HttpServer;
 use Ratchet\WebSocket\WsServer;
+use React\Socket\Server as ReactServer;
 
-// Create the WebSocket server
-$server = IoServer::factory(
-    new HttpServer(
-        new WsServer(
-            new AnnouncementsWebSocket()
-        )
-    ),
-    8080,
-    '0.0.0.0'
-);
+// Create the WebSocket server components
+$webSocketComponent = new AnnouncementsWebSocket();
+$webSocketServer = new WsServer($webSocketComponent);
+$httpServer = new HttpServer($webSocketServer);
+
+// Create React socket server that explicitly binds to all interfaces
+$reactSocket = new ReactServer('0.0.0.0:8080');
+$server = new IoServer($httpServer, $reactSocket);
 
 echo "WebSocket server started on port 8080\n";
 echo "Press Ctrl+C to stop the server\n";

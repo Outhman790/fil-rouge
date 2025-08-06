@@ -15,7 +15,9 @@
 
     function setupSocket() {
         try {
-            socket = new WebSocket('ws://localhost:8080');
+            const wsHost = window.location.hostname;
+            const wsUrl = `ws://${wsHost}:8080`;
+            socket = new WebSocket(wsUrl);
             socket.onopen = () => initLikes();
             socket.onmessage = (e) => {
                 try {

@@ -1,8 +1,7 @@
 name: 🚀 Deploy Sandik to EC2
 
 on:
-  push:
-    branches: [main]
+  workflow_dispatch:  # Manual trigger only - run when production server is ready
 
 jobs:
   deploy:

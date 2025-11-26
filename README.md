@@ -1,6 +1,6 @@
 # Obuildings - Building Management System
 
-A comprehensive web-based platform designed to streamline building management operations, facilitate resident communication, and automate monthly payment tracking. Built for multi-tenant residential buildings to enhance community engagement and financial transparency.
+A comprehensive web-based platform designed to streamline building management operations, facilitate resident communication, and automate monthly payment tracking. Built for residential buildings to enhance community engagement and financial transparency.
 
 ## Features
 

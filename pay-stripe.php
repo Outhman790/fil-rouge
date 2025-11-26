@@ -2,11 +2,11 @@
 // Include the Stripe PHP library
 // require_once('vendor/autoload.php');
 
-// // Set your Stripe API keys
-// $stripeSecretKey = 'sk_test_51NHQn6JsAbiLXvIKW2PwqeGkLRnKlxrOJvJ6OcLXAwNxB41JJJUDhrMDgI9RpdnK0ecSIXw666K72FEYFYZZ6meU0083s703GX';
+// // Set your Stripe API keys (moved to environment variables)
+// // Load from .env file: STRIPE_SECRET_KEY
 
 // // Set the Stripe API version
-// \Stripe\Stripe::setApiKey($stripeSecretKey);
+// \Stripe\Stripe::setApiKey(getenv('STRIPE_SECRET_KEY'));
 
 // // Handle the payment processing
 // if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -63,7 +63,27 @@
 //     }
 // }
 require_once('vendor/autoload.php');
-\Stripe\Stripe::setApiKey('sk_test_51NHQn6JsAbiLXvIKW2PwqeGkLRnKlxrOJvJ6OcLXAwNxB41JJJUDhrMDgI9RpdnK0ecSIXw666K72FEYFYZZ6meU0083s703GX');
+
+// Load environment variables from .env file if it exists
+if (file_exists(__DIR__ . '/.env')) {
+    $envVars = parse_ini_file(__DIR__ . '/.env');
+    foreach ($envVars as $key => $value) {
+        if (!getenv($key)) {
+            putenv("$key=$value");
+        }
+    }
+}
+
+// Get Stripe API key from environment variable
+$stripeSecretKey = getenv('STRIPE_SECRET_KEY') ?: '';
+
+if (empty($stripeSecretKey)) {
+    error_log('WARNING: STRIPE_SECRET_KEY not set in environment variables.');
+    echo json_encode(['error' => 'Stripe configuration error. Please contact administrator.']);
+    exit;
+}
+
+\Stripe\Stripe::setApiKey($stripeSecretKey);
 
 header('Content-Type: application/json');
 

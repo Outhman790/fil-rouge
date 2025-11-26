@@ -28,13 +28,6 @@ $dbConfig = [
     'password' => getenv('DB_PASSWORD') ?: ''
 ];
 
-// Fallback for production (remove after migration to environment variables)
-if ($environment === 'production' && empty($dbConfig['password'])) {
-    error_log('WARNING: Using fallback database configuration. Please set environment variables.');
-    $dbConfig['username'] = 'outhman790';
-    $dbConfig['password'] = 'outhman790..!!';
-}
-
 // Define constants for backward compatibility
 define('DB_HOST', $dbConfig['host']);
 define('DB_NAME', $dbConfig['dbname']);

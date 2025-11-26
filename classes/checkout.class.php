@@ -3,12 +3,18 @@ session_start();
 require_once "StripeHelper.class.php";
 require_once "payments.class.php";
 
-// Dynamically determine base URL
-if (isset($_SERVER['HTTP_HOST']) && strpos($_SERVER['HTTP_HOST'], 'localhost') !== false) {
-    $appUrl = "http://localhost/sandik/";
-} else {
-    $appUrl = "http://35.180.140.169/";
+// Load environment variables from .env file if it exists
+if (file_exists(__DIR__ . '/../.env')) {
+    $envVars = parse_ini_file(__DIR__ . '/../.env');
+    foreach ($envVars as $key => $value) {
+        if (!getenv($key)) {
+            putenv("$key=$value");
+        }
+    }
 }
+
+// Get base URL from environment or default to localhost
+$appUrl = getenv('APP_URL') ?: "http://localhost/sandik/";
 
 // Get payment details from form
 $payAll = isset($_POST['pay_all']) && $_POST['pay_all'] == '1';

@@ -10,10 +10,14 @@
 // Load environment variables from .env file if it exists
 if (file_exists(__DIR__ . '/../.env')) {
     $envVars = parse_ini_file(__DIR__ . '/../.env');
-    foreach ($envVars as $key => $value) {
-        if (!getenv($key)) {
-            putenv("$key=$value");
+    if ($envVars !== false && is_array($envVars)) {
+        foreach ($envVars as $key => $value) {
+            if (!getenv($key)) {
+                putenv("$key=$value");
+            }
         }
+    } else {
+        error_log('ERROR: Failed to parse .env file. Check for syntax errors in the file.');
     }
 }
 

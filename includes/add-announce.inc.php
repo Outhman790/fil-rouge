@@ -21,8 +21,13 @@ if (isset($_SESSION['resident_id']) && $_SESSION['status'] == 'Admin') {
             echo "Announcement added successfully.";
 
             // Move the uploaded image to the "uploads" folder
-            $targetDirectory = './uploads/announces/';
+            $targetDirectory = '../uploads/announces/';
             $targetFilePath = $targetDirectory . basename($image);
+
+            if (!is_dir($targetDirectory)) {
+                mkdir($targetDirectory, 0755, true);
+            }
+
             move_uploaded_file($_FILES['image']['tmp_name'], $targetFilePath);
             header('location: ../index.php');
         } else {

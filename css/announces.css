@@ -171,11 +171,26 @@ body {
   flex-direction: column;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   cursor: pointer;
+  position: relative;
 }
 
 .announcement-card-modern:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.announcement-card-modern::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--border-radius);
+  border: 2px solid transparent;
+  transition: border-color 0.3s ease;
+  pointer-events: none;
+}
+
+.announcement-card-modern:hover::after {
+  border-color: var(--color-primary);
 }
 
 /* Card Header */
@@ -186,6 +201,7 @@ body {
   justify-content: space-between;
   align-items: flex-start;
   gap: 1rem;
+  position: relative;
 }
 
 .announcement-meta {
@@ -216,6 +232,8 @@ body {
 /* Card Content */
 .card-content-modern {
   padding: 1rem;
+  position: relative;
+  z-index: 0;
 }
 
 .announcement-title-modern {
@@ -238,37 +256,33 @@ body {
 
 /* Simple Image */
 .announcement-image-wrapper {
+  position: relative;
   border-radius: var(--border-radius);
   overflow: hidden;
   height: 180px;
   background: var(--color-gray-200);
   margin-bottom: 1rem;
-  cursor: pointer;
+  cursor: zoom-in;
+  transition: all 0.3s ease;
+  z-index: 1;
+}
+
+.announcement-image-wrapper:hover {
+  transform: scale(1.02);
+  z-index: 10;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
 }
 
 .announcement-image-modern {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
+  transition: opacity 0.3s ease;
 }
 
-.image-overlay-modern {
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.5);
-  opacity: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.announcement-image-wrapper:hover .image-overlay-modern {
-  opacity: 1;
-}
-
-.image-zoom-icon {
-  color: white;
-  font-size: 1.2rem;
+.announcement-image-wrapper:hover .announcement-image-modern {
+  opacity: 0.9;
 }
 
 /* Card Interactions */
@@ -310,8 +324,10 @@ body {
 }
 
 .comment-info {
-  background: var(--color-success, #10b981);
-  color: white;
+  background: var(--color-gray-200, #e5e7eb);
+  color: var(--color-gray-600, #4b5563);
+  cursor: default;
+  pointer-events: none;
 }
 
 /* Simple Comment Input */
@@ -363,6 +379,7 @@ body {
 .comments-section-modern {
   padding: 1rem;
   background: white;
+  display: none; /* Hidden by default, shown in modal */
 }
 
 .comments-header {
@@ -381,51 +398,175 @@ body {
 
 .comment-item-modern {
   display: flex;
-  gap: 0.5rem;
-  margin-bottom: 0.75rem;
-  padding: 0.5rem;
-  background: var(--color-gray-50);
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+  padding: 0.75rem;
+  background: white;
   border-radius: var(--border-radius);
+  position: relative;
+  transition: all 0.3s ease;
+  overflow: visible;
+  width: 100%;
+  box-sizing: border-box;
+  max-width: 100%;
+  border: 1px solid var(--color-gray-200);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .comment-avatar-modern {
-  width: 24px;
-  height: 24px;
-  background: var(--color-primary);
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  font-size: 0.7rem;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(99, 102, 241, 0.3);
 }
 
 .comment-content-modern {
   flex: 1;
+  min-width: 0;
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
 .comment-header-modern {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 0.25rem;
+  align-items: center;
+  margin: 0;
+  gap: 0.5rem;
+  flex-wrap: nowrap;
 }
 
 .comment-author-modern {
-  font-weight: 600;
-  font-size: 0.8rem;
+  font-weight: 700;
+  font-size: 0.9rem;
   margin: 0;
+  padding: 0;
+  color: var(--color-gray-800);
+  word-break: break-word;
+  flex: 1;
+  line-height: 1.2;
 }
 
 .comment-date-modern {
   font-size: 0.7rem;
   color: var(--color-gray-500);
+  white-space: nowrap;
+  flex-shrink: 0;
+  line-height: 1;
 }
 
 .comment-text-modern {
-  font-size: 0.8rem;
-  color: var(--color-gray-600);
-  line-height: 1.3;
+  font-size: 0.9rem;
+  color: var(--color-gray-700);
+  line-height: 1.4;
   margin: 0;
+  padding: 0;
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  display: block;
+  width: 100%;
+}
+
+.comment-delete-btn {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: linear-gradient(135deg, rgba(248, 113, 113, 0.08) 0%, rgba(239, 68, 68, 0.12) 100%);
+  border: 1.5px solid rgba(248, 113, 113, 0.2);
+  color: #ef4444;
+  cursor: pointer;
+  padding: 0;
+  border-radius: 10px;
+  font-size: 0.75rem;
+  opacity: 0;
+  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 100;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 8px rgba(239, 68, 68, 0.15), 0 1px 3px rgba(239, 68, 68, 0.1);
+  backdrop-filter: blur(8px);
+}
+
+.comment-item-modern:hover .comment-delete-btn {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.comment-delete-btn::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f87171, #ef4444, #dc2626);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -1;
+}
+
+.comment-delete-btn:hover::before {
+  opacity: 0.15;
+  animation: pulse-border 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-border {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.15;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.25;
+  }
+}
+
+.comment-delete-btn:hover {
+  background: linear-gradient(135deg, #fee2e2 0%, #fca5a5 50%, #f87171 100%);
+  border-color: #f87171;
+  color: #dc2626;
+  transform: translateY(-2px) scale(1.1);
+  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3),
+              0 4px 8px rgba(239, 68, 68, 0.2),
+              inset 0 1px 2px rgba(255, 255, 255, 0.4);
+}
+
+.comment-delete-btn:active {
+  transform: translateY(0) scale(0.95);
+  box-shadow: 0 3px 8px rgba(239, 68, 68, 0.2),
+              inset 0 2px 4px rgba(239, 68, 68, 0.2);
+}
+
+.comment-delete-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+  transform: none !important;
+  background: rgba(156, 163, 175, 0.1);
+  border-color: rgba(156, 163, 175, 0.2);
+  color: #9ca3af;
+}
+
+.comment-delete-btn i {
+  pointer-events: none;
+  font-size: 0.95rem;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+}
+
+.comment-delete-btn:hover i {
+  transform: scale(1.15) rotate(-8deg);
+  filter: drop-shadow(0 2px 4px rgba(220, 38, 38, 0.3));
 }
 
 /* No Comments */
@@ -488,7 +629,328 @@ body {
   50% { opacity: 0.3; }
 }
 
-/* Modal */
+/* Announcement Modal Styles */
+.announcement-modal-content {
+  background: white !important;
+  border: none !important;
+  border-radius: 16px !important;
+  overflow: hidden !important;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3) !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.announcement-modal-header {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
+  color: white !important;
+  padding: 1.5rem 2rem !important;
+  border: none !important;
+  border-bottom: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  border-radius: 16px 16px 0 0 !important;
+  flex-shrink: 0 !important;
+}
+
+.announcement-modal-title {
+  font-size: 1.5rem !important;
+  font-weight: 700 !important;
+  margin: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  color: white !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  flex: 1 !important;
+  padding-right: 1rem !important;
+}
+
+.announcement-modal-title i {
+  font-size: 1.3rem !important;
+  opacity: 0.9 !important;
+  flex-shrink: 0 !important;
+}
+
+.announcement-modal-body {
+  background: var(--color-gray-50) !important;
+  max-height: 70vh !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  padding: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
+}
+
+/* Modal Image - Same as Admin Dashboard */
+.announcement-modal-image-wrapper {
+  width: 100% !important;
+  padding: 0 !important;
+  background: #000 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: 0 !important;
+  min-height: 200px !important;
+  flex-shrink: 0 !important;
+  box-sizing: border-box !important;
+}
+
+.announcement-modal-image {
+  max-width: 100% !important;
+  max-height: 80vh !important;
+  object-fit: contain !important;
+  display: block !important;
+  border-radius: 0 !important;
+}
+
+/* Modal Description */
+.announcement-modal-description {
+  padding: 2rem !important;
+  background: white !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  flex-shrink: 0 !important;
+}
+
+.announcement-modal-meta {
+  display: flex !important;
+  gap: 1.5rem !important;
+  margin-bottom: 1rem !important;
+  padding-bottom: 1rem !important;
+  border-bottom: 1px solid var(--color-gray-200) !important;
+  flex-wrap: wrap !important;
+}
+
+.announcement-modal-meta span {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  font-size: 0.9rem !important;
+  color: var(--color-gray-600) !important;
+  white-space: nowrap !important;
+}
+
+.announcement-modal-meta i {
+  color: var(--color-primary) !important;
+  flex-shrink: 0 !important;
+}
+
+.announcement-modal-text {
+  font-size: 1rem !important;
+  line-height: 1.7 !important;
+  color: var(--color-gray-700) !important;
+  word-wrap: break-word !important;
+  word-break: break-word !important;
+  overflow-wrap: break-word !important;
+  margin: 0 !important;
+  max-width: 100% !important;
+}
+
+/* Modal Interactions */
+.announcement-modal-interactions {
+  padding: 1.5rem 2rem !important;
+  background: white !important;
+  border-top: 1px solid var(--color-gray-200) !important;
+  border-bottom: 1px solid var(--color-gray-200) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 1rem !important;
+  margin: 0 !important;
+  width: 100% !important;
+  overflow: hidden !important;
+  flex-wrap: wrap !important;
+  box-sizing: border-box !important;
+  flex-shrink: 0 !important;
+}
+
+.interaction-divider {
+  width: 1px !important;
+  height: 30px !important;
+  background: var(--color-gray-300) !important;
+}
+
+.interaction-info {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  color: var(--color-gray-600) !important;
+  font-size: 0.95rem !important;
+}
+
+.interaction-label {
+  font-weight: 500 !important;
+  color: var(--color-gray-700) !important;
+  margin-left: 0.25rem !important;
+}
+
+/* Modal Comment Input */
+.announcement-modal-comment-input {
+  padding: 1.5rem 2rem !important;
+  background: white !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 1rem !important;
+  border-bottom: 1px solid var(--color-gray-200) !important;
+  margin: 0 !important;
+  width: 100% !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  flex-shrink: 0 !important;
+}
+
+.user-avatar-modal {
+  width: 40px !important;
+  height: 40px !important;
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: white !important;
+  font-size: 1rem !important;
+  flex-shrink: 0 !important;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3) !important;
+}
+
+.comment-input-modal {
+  flex: 1 !important;
+  border: 2px solid var(--color-gray-200) !important;
+  outline: none !important;
+  font-size: 0.95rem !important;
+  background: var(--color-gray-50) !important;
+  padding: 0.75rem 1rem !important;
+  border-radius: 12px !important;
+  transition: all 0.3s ease !important;
+  font-family: inherit !important;
+}
+
+.comment-input-modal:focus {
+  border-color: var(--color-primary) !important;
+  background: white !important;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1) !important;
+}
+
+.comment-input-modal::placeholder {
+  color: var(--color-gray-400) !important;
+}
+
+.comment-submit-btn-modal {
+  width: 44px !important;
+  height: 44px !important;
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 12px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  font-size: 1rem !important;
+  transition: all 0.3s ease !important;
+  flex-shrink: 0 !important;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3) !important;
+}
+
+.comment-submit-btn-modal:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4) !important;
+}
+
+.comment-submit-btn-modal:active {
+  transform: translateY(0) !important;
+}
+
+.comment-submit-btn-modal:disabled {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+}
+
+/* Modal Comments Section */
+.announcement-modal-comments {
+  padding: 1.5rem 2rem 2rem !important;
+  background: var(--color-gray-50) !important;
+  min-height: 200px !important;
+  margin: 0 !important;
+  width: 100% !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  flex-shrink: 0 !important;
+}
+
+.comments-header-modal {
+  font-size: 1rem !important;
+  font-weight: 700 !important;
+  color: var(--color-gray-800) !important;
+  margin-bottom: 1.5rem !important;
+  padding-bottom: 1rem !important;
+  border-bottom: 2px solid var(--color-gray-200) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+}
+
+.comments-header-modal i {
+  color: var(--color-primary) !important;
+  font-size: 1.1rem !important;
+}
+
+.comments-list-modal {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 1rem !important;
+  max-height: 400px !important;
+  overflow-y: auto !important;
+  padding-right: 0.5rem !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Custom Scrollbar for Comments List */
+.comments-list-modal::-webkit-scrollbar {
+  width: 8px;
+}
+
+.comments-list-modal::-webkit-scrollbar-track {
+  background: var(--color-gray-200);
+  border-radius: 10px;
+}
+
+.comments-list-modal::-webkit-scrollbar-thumb {
+  background: var(--color-gray-400);
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+
+.comments-list-modal::-webkit-scrollbar-thumb:hover {
+  background: var(--color-gray-500);
+}
+
+.no-comments-state-modal {
+  text-align: center !important;
+  padding: 3rem 2rem !important;
+  color: var(--color-gray-500) !important;
+}
+
+.no-comments-state-modal i {
+  font-size: 3rem !important;
+  color: var(--color-gray-300) !important;
+  margin-bottom: 1rem !important;
+  display: block !important;
+}
+
+.no-comments-state-modal p {
+  font-size: 0.95rem !important;
+  margin: 0 !important;
+}
+
+/* Image Modal (for full-size view) */
 .modal-header {
   background: #000;
   color: white;
@@ -503,10 +965,50 @@ body {
   justify-content: center;
 }
 
+/* Delete Comment Modal Override */
+#deleteCommentModal .modal-content {
+  background: #ffffff;
+  border-radius: 12px;
+}
+
+#deleteCommentModal .modal-body {
+  background: #ffffff;
+  padding: 1rem;
+  color: #374151;
+}
+
+#deleteCommentModal .modal-header {
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+#deleteCommentModal .modal-footer {
+  background: #ffffff;
+  border-top: 1px solid #e5e7eb;
+}
+
 .modal-image {
   max-width: 100%;
   max-height: 80vh;
   object-fit: contain;
+}
+
+/* Modal Scrollbar */
+.announcement-modal-body::-webkit-scrollbar {
+  width: 10px;
+}
+
+.announcement-modal-body::-webkit-scrollbar-track {
+  background: var(--color-gray-200);
+}
+
+.announcement-modal-body::-webkit-scrollbar-thumb {
+  background: var(--color-gray-400);
+  border-radius: 5px;
+}
+
+.announcement-modal-body::-webkit-scrollbar-thumb:hover {
+  background: var(--color-gray-500);
 }
 
 /* Simple Animations Only */
@@ -550,41 +1052,77 @@ body {
   .announce-hero {
     padding: 3rem 0 !important;
   }
-  
+
   .announce-title {
     font-size: 2.2rem !important;
     flex-direction: column !important;
     gap: 1rem !important;
   }
-  
+
   .announce-title i {
     font-size: 2rem !important;
   }
-  
+
   .announce-subtitle {
     font-size: 1.1rem !important;
     margin-bottom: 2.5rem !important;
     padding: 0 1rem !important;
   }
-  
+
   .announce-stats {
     gap: 1.5rem !important;
     padding: 0 1rem !important;
   }
-  
+
   .announce-card {
     padding: 1.5rem 1rem !important;
     min-width: 120px !important;
   }
-  
+
   .announce-number {
     font-size: 2rem !important;
   }
-  
+
   .announcements-wrapper {
     grid-template-columns: 1fr;
     gap: 1.5rem;
     padding: 0 1rem;
+  }
+
+  /* Modal adjustments for tablets */
+  .announcement-modal-image-wrapper {
+    min-height: 180px !important;
+  }
+
+  .announcement-modal-image {
+    max-height: 70vh !important;
+  }
+
+  .announcement-modal-description {
+    padding: 1.5rem !important;
+  }
+
+  .announcement-modal-interactions {
+    padding: 1rem 1.5rem !important;
+  }
+
+  .announcement-modal-comment-input {
+    padding: 1rem 1.5rem !important;
+  }
+
+  .announcement-modal-comments {
+    padding: 1.5rem !important;
+  }
+
+  .user-avatar-modal {
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 0.9rem !important;
+  }
+
+  .comment-submit-btn-modal {
+    width: 40px !important;
+    height: 40px !important;
   }
 }
   
@@ -603,17 +1141,49 @@ body {
 @media (max-width: 480px) {
   .container { padding: 0 0.5rem; }
   .announcements-section { padding: 1.5rem 0; }
-  
+
   .announcements-wrapper {
     grid-template-columns: 1fr !important;
     gap: 1rem !important;
     padding: 0 0.5rem !important;
   }
-  
+
   .card-header-modern,
   .card-content-modern,
   .card-interactions-modern,
   .comments-section-modern { padding: 0.75rem; }
+
+  /* Modal responsive */
+  .announcement-modal-header {
+    padding: 1rem 1.5rem !important;
+  }
+
+  .announcement-modal-title {
+    font-size: 1.2rem !important;
+  }
+
+  .announcement-modal-description,
+  .announcement-modal-comment-input,
+  .announcement-modal-comments {
+    padding: 1rem 1.5rem !important;
+  }
+
+  .announcement-modal-interactions {
+    padding: 1rem 1.5rem !important;
+    flex-wrap: wrap !important;
+  }
+
+  .comments-list-modal {
+    max-height: 300px !important;
+  }
+
+  .announcement-modal-image-wrapper {
+    min-height: 150px !important;
+  }
+
+  .announcement-modal-image {
+    max-height: 60vh !important;
+  }
 }
 
 /* Remove all effects for users who prefer reduced motion */

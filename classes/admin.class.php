@@ -47,7 +47,7 @@ class Admin extends DB
     public function countResidents()
     {
         try {
-            $query = "SELECT COUNT(*) AS residents_count FROM residents";
+            $query = "SELECT COUNT(*) AS residents_count FROM residents WHERE status NOT IN ('admin', 'Previous resident')";
 
             $statement = $this->connect()->prepare($query);
 
@@ -220,6 +220,18 @@ class Admin extends DB
             $query = "DELETE FROM purchases WHERE purchase_id = :purchase_id";
             $stmt = $this->connect()->prepare($query);
             $stmt->bindParam(':purchase_id', $purchase_id, PDO::PARAM_INT);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    public function deleteAnnouncement($announcement_id)
+    {
+        try {
+            $query = "DELETE FROM announcements WHERE announcement_id = :announcement_id";
+            $stmt = $this->connect()->prepare($query);
+            $stmt->bindParam(':announcement_id', $announcement_id, PDO::PARAM_INT);
             return $stmt->execute();
         } catch (PDOException $e) {
             return false;

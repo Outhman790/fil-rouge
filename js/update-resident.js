@@ -35,17 +35,24 @@ $(document).ready(function () {
 // Setting the chosen resident id to the value of the hidden input in update modal
 document.addEventListener("DOMContentLoaded", function () {
   document.addEventListener("click", function (event) {
-    if (event.target.closest(".update-btn-resident")) {
-      let residentId = event.target
-        .closest(".update-btn-resident")
-        .getAttribute("data-resident-id");
-      document.getElementById("residentIdInput").value = residentId;
-      
+    let updateButton = event.target.closest(".update-btn-resident");
+
+    if (updateButton && updateButton.hasAttribute('data-resident-id')) {
+      console.log("Update button clicked!");
+      let residentId = updateButton.getAttribute("data-resident-id");
+      console.log("Resident ID:", residentId);
+
+      let residentIdInput = document.getElementById("residentIdInput");
+      if (residentIdInput) {
+        residentIdInput.value = residentId;
+      }
+
       // Fetch resident data and populate form
       fetch(`includes/get-resident.inc.php?resident_id=${residentId}`)
         .then(response => response.json())
         .then(data => {
           if (data.success) {
+            console.log("Resident data fetched successfully");
             // Populate form fields with resident data
             document.getElementById("fNameInput").value = data.data.fName;
             document.getElementById("lNameInput").value = data.data.lName;

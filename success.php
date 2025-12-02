@@ -134,7 +134,7 @@ if (!empty($currentUnpaidMonths)) {
                         ?>.
                     </p>
                     <div class="mb-3">
-                        <span class="badge badge-success p-2" style="font-size: 1rem;">Transaction ID:</span>
+                        <span class="badge badge-success p-2 text-dark" style="font-size: 1rem;">Transaction ID:</span>
                         <span class="fw-bold text-dark ms-2" style="word-break: break-all;"> <?php echo $checkoutSession->payment_intent; ?> </span>
                     </div>
                     <a href="homepage.php" class="btn btn-lg btn-primary mt-2 px-5 shadow-sm">Back to Homepage</a>

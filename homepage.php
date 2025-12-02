@@ -71,8 +71,8 @@ if (isset($_SESSION['status']) && $_SESSION['status'] === 'Resident') {
                                     <td><?php echo htmlspecialchars($purchase['name']); ?></td>
                                     <td><?php echo htmlspecialchars($purchase['description']); ?></td>
                                     <td>
-                                        <a href="includes/uploads/<?php echo htmlspecialchars($purchase['invoice']) ?>" data-bs-toggle="modal" data-bs-target="#imageModal">
-                                            <img src="includes/uploads/<?php echo htmlspecialchars($purchase['invoice']) ?>" alt="Invoice Image" height="100">
+                                        <a href="uploads/invoices/<?php echo htmlspecialchars($purchase['invoice']) ?>" data-bs-toggle="modal" data-bs-target="#imageModal">
+                                            <img src="uploads/invoices/<?php echo htmlspecialchars($purchase['invoice']) ?>" alt="Invoice Image" height="100">x
                                         </a>
                                     </td>
                                     <td class="text-center"><?php echo number_format($purchase['amount'], 0, ',', '.') ?>

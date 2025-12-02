@@ -42,17 +42,12 @@ class AnnouncementRenderer
                 </p>
                 
                 <?php if (!empty($announcement['image'])) : ?>
-                <div class="announcement-image-wrapper image-clickable" 
-                     data-image-src="includes/uploads/announces/<?php echo htmlspecialchars($announcement['image']) ?>"
+                <div class="announcement-image-wrapper image-clickable"
+                     data-image-src="uploads/announces/<?php echo htmlspecialchars($announcement['image']) ?>"
                      data-image-title="<?php echo htmlspecialchars($announcement['title']) ?>">
-                    <img src="includes/uploads/announces/<?php echo htmlspecialchars($announcement['image']) ?>" 
-                         class="announcement-image-modern" 
+                    <img src="uploads/announces/<?php echo htmlspecialchars($announcement['image']) ?>"
+                         class="announcement-image-modern"
                          alt="<?php echo htmlspecialchars($announcement['title']) ?>">
-                    <div class="image-overlay-modern">
-                        <div class="image-zoom-icon">
-                            <i class="fas fa-search-plus"></i>
-                        </div>
-                    </div>
                 </div>
                 <?php endif; ?>
             </div>
@@ -64,30 +59,15 @@ class AnnouncementRenderer
                         <i class="far fa-heart"></i>
                         <span class="like-count" id="like-count-<?php echo $announcement['announcement_id']; ?>"><?php echo $countLikes['like_count'] ?></span>
                     </button>
-                    
+
                     <div class="interaction-btn comment-info">
                         <i class="fas fa-comment"></i>
                         <span class="comment-count" id="comment-count-<?php echo $announcement['announcement_id']; ?>"><?php echo count($allComments) ?></span>
                     </div>
                 </div>
-                
-                <!-- Comment Input -->
-                <div class="comment-input-wrapper">
-                    <div class="user-avatar">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <input type="text" 
-                           class="comment-input-modern" 
-                           placeholder="Share your thoughts..."
-                           id="comment-input-<?php echo $announcement['announcement_id']; ?>">
-                    <button class="comment-submit-btn" 
-                            data-announcement-id="<?php echo $announcement['announcement_id']; ?>">
-                        <i class="fas fa-paper-plane"></i>
-                    </button>
-                </div>
             </div>
 
-            <!-- Comments Section -->
+            <!-- Comments Section (Hidden, shown in modal) -->
             <div class="comments-section-modern">
                 <?php if (!empty($allComments)) : ?>
                     <div class="comments-header">
@@ -107,12 +87,97 @@ class AnnouncementRenderer
                 <?php endif; ?>
             </div>
         </div>
+
+        <!-- Announcement Details Modal -->
+        <div class="modal fade" id="announcementModal-<?php echo $announcement['announcement_id']; ?>" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+                <div class="modal-content announcement-modal-content">
+                    <div class="modal-header announcement-modal-header">
+                        <h5 class="modal-title announcement-modal-title">
+                            <i class="fas fa-bullhorn me-2"></i>
+                            <?php echo htmlspecialchars($announcement['title']) ?>
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body announcement-modal-body p-0">
+                        <!-- Image -->
+                        <?php if (!empty($announcement['image'])) : ?>
+                        <div class="announcement-modal-image-wrapper">
+                            <img src="uploads/announces/<?php echo htmlspecialchars($announcement['image']) ?>"
+                                 class="announcement-modal-image"
+                                 alt="<?php echo htmlspecialchars($announcement['title']) ?>">
+                        </div>
+                        <?php endif; ?>
+
+                        <!-- Description -->
+                        <div class="announcement-modal-description">
+                            <div class="announcement-modal-meta">
+                                <span><i class="fas fa-calendar-alt me-1"></i><?php echo date('M j, Y', strtotime($announcement['created_at'])) ?></span>
+                                <span><i class="fas fa-clock me-1"></i><?php echo date('g:i A', strtotime($announcement['created_at'])) ?></span>
+                            </div>
+                            <p class="announcement-modal-text"><?php echo nl2br(htmlspecialchars($announcement['description'])) ?></p>
+                        </div>
+
+                        <!-- Interactions -->
+                        <div class="announcement-modal-interactions">
+                            <button class="interaction-btn like-btn" data-announcement-id="<?php echo $announcement['announcement_id']; ?>">
+                                <i class="far fa-heart"></i>
+                                <span class="like-count"><?php echo $countLikes['like_count'] ?></span>
+                                <span class="interaction-label">Likes</span>
+                            </button>
+                            <div class="interaction-divider"></div>
+                            <div class="interaction-info">
+                                <i class="fas fa-comment"></i>
+                                <span class="comment-count"><?php echo count($allComments) ?></span>
+                                <span class="interaction-label">Comments</span>
+                            </div>
+                        </div>
+
+                        <!-- Comment Input -->
+                        <div class="announcement-modal-comment-input">
+                            <div class="user-avatar-modal">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <input type="text"
+                                   class="comment-input-modal"
+                                   placeholder="Write a comment..."
+                                   id="modal-comment-input-<?php echo $announcement['announcement_id']; ?>">
+                            <button class="comment-submit-btn-modal"
+                                    data-announcement-id="<?php echo $announcement['announcement_id']; ?>">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+
+                        <!-- Comments List -->
+                        <div class="announcement-modal-comments">
+                            <?php if (!empty($allComments)) : ?>
+                                <div class="comments-header-modal">
+                                    <i class="fas fa-comments"></i> All Comments
+                                </div>
+                                <div class="comments-list-modal" id="modal-comments-list-<?php echo $announcement['announcement_id']; ?>">
+                                    <?php foreach ($allComments as $comment) : ?>
+                                        <?php self::renderCommentItem($comment); ?>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php else : ?>
+                                <div class="no-comments-state-modal">
+                                    <i class="fas fa-comment-dots"></i>
+                                    <p>No comments yet. Start the conversation!</p>
+                                </div>
+                                <div class="comments-list-modal" id="modal-comments-list-<?php echo $announcement['announcement_id']; ?>"></div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 <?php
     }
 
     private static function renderCommentItem($comment) {
+        $isOwnComment = isset($_SESSION['resident_id']) && $_SESSION['resident_id'] == $comment['resident_id'];
 ?>
-        <div class="comment-item-modern">
+        <div class="comment-item-modern" data-comment-id="<?php echo $comment['comment_id']; ?>">
             <div class="comment-avatar-modern">
                 <i class="fas fa-user"></i>
             </div>
@@ -129,6 +194,14 @@ class AnnouncementRenderer
                     <?php echo nl2br(htmlspecialchars($comment['comment_text'])) ?>
                 </p>
             </div>
+            <?php if ($isOwnComment) : ?>
+                <button class="comment-delete-btn"
+                        data-comment-id="<?php echo $comment['comment_id']; ?>"
+                        data-announcement-id="<?php echo $comment['announcement_id']; ?>"
+                        title="Delete your comment">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+            <?php endif; ?>
         </div>
 <?php
     }
@@ -167,6 +240,31 @@ class AnnouncementRenderer
                     </div>
                     <div class="modal-body">
                         <img id="modalImage" src="" alt="" class="modal-image">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete Comment Confirmation Modal -->
+        <div class="modal fade" id="deleteCommentModal" tabindex="-1" aria-labelledby="deleteCommentModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-sm">
+                <div class="modal-content border-0 shadow-lg">
+                    <div class="modal-header border-0 pb-0">
+                        <h5 class="modal-title text-danger" id="deleteCommentModalLabel">
+                            <i class="fas fa-exclamation-triangle me-2"></i>Delete Comment
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body py-4">
+                        <p class="mb-0 text-center">Are you sure you want to delete this comment? This action cannot be undone.</p>
+                    </div>
+                    <div class="modal-footer border-0 pt-0">
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-1"></i>Cancel
+                        </button>
+                        <button type="button" class="btn btn-danger btn-sm" id="confirmDeleteComment">
+                            <i class="fas fa-trash-alt me-1"></i>Delete
+                        </button>
                     </div>
                 </div>
             </div>

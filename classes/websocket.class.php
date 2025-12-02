@@ -37,6 +37,7 @@ class AnnouncementsWebSocket implements MessageComponentInterface
             $userObj = new User();
             $addComment = $userObj->addComment($announcementId, $residentId, $comment);
             $createdAt = $addComment['created_at'];
+            $commentId = $addComment['comment_id'];
             // Create a new data object with the comment and additional data
             $responseData = [
                 'type' => 'comment',
@@ -44,7 +45,8 @@ class AnnouncementsWebSocket implements MessageComponentInterface
                 'resident_id' => $residentId,
                 'resident_fullName' => $resident_fullName,
                 'announcement_id' => $announcementId,
-                'created_at' => $createdAt
+                'created_at' => $createdAt,
+                'comment_id' => $commentId
             ];
             // Broadcast the updated data to all connected clients
             foreach ($this->clients as $client) {
@@ -124,6 +126,41 @@ class AnnouncementsWebSocket implements MessageComponentInterface
 
             // Send only to the requesting client
             $from->send(json_encode($responseData));
+        }
+
+        if (isset($data['type']) && ($data['type'] === 'delete_comment')) {
+            $commentId = $data['comment_id'];
+            $announcementId = $data['announcement_id'];
+            $residentId = $data['resident_id'];
+            $userObj = new User();
+
+            // Delete the comment
+            $success = $userObj->deleteComment($commentId, $residentId);
+
+            if ($success) {
+                // Get updated comment count
+                $comments = $userObj->showComments($announcementId);
+
+                // Broadcast to all clients that the comment was deleted
+                $responseData = [
+                    'type' => 'comment_deleted',
+                    'comment_id' => $commentId,
+                    'announcement_id' => $announcementId,
+                    'comment_count' => count($comments),
+                    'success' => true
+                ];
+
+                foreach ($this->clients as $client) {
+                    $client->send(json_encode($responseData));
+                }
+            } else {
+                // Send error only to requesting client
+                $from->send(json_encode([
+                    'type' => 'comment_deleted',
+                    'success' => false,
+                    'error' => 'Failed to delete comment or unauthorized'
+                ]));
+            }
         }
     }
 

@@ -1,7 +1,8 @@
 <?php
 session_start();
+require_once 'classes/security.class.php';
 if (isset($_SESSION['resident_id']) && $_SESSION['status'] == 'Admin') {
-
+  $csrfToken = Security::generateCSRFToken();
 ?>
   <!DOCTYPE html>
   <html>
@@ -85,6 +86,7 @@ if (isset($_SESSION['resident_id']) && $_SESSION['status'] == 'Admin') {
           </div>
           <div class="form-body">
             <form id="add-expense-form" enctype="multipart/form-data">
+              <input type="hidden" name="csrf_token" value="<?php echo $csrfToken; ?>">
               <div class="form-floating">
                 <input type="text" id="name" name="name" class="form-control" placeholder="Expense Name" required />
                 <label for="name">Expense Name</label>

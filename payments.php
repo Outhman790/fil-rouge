@@ -54,22 +54,20 @@ PageRenderer::renderPageHeader($pageConfig['title'], $pageConfig['currentPage'],
     // Get user payments for display
     $paymentsObj = new User();
     $payments = $paymentsObj->getUserPayments($_SESSION['resident_id']);
-    
+
     // Load application configuration
     $config = require_once 'config/app-config.php';
-    
+
     // Create comprehensive payment data
     $allMonths = [];
     $paidMonths = [];
     $monthlyFee = $config['monthly_fee'];
-    
+
     // Get all months from registration to current
-    $registrationYear = (int)$joinedIn['year'];
-    $registrationMonth = (int)$joinedIn['month'];
     $currentYear = (int)date('Y');
     $currentMonth = (int)date('n');
-    
-    // Create paid months array
+
+    // Create paid months array with proper type casting
     foreach ($payments as $payment) {
         $paidMonths[] = [
             'month' => (int)$payment['payment_month'],
@@ -78,16 +76,54 @@ PageRenderer::renderPageHeader($pageConfig['title'], $pageConfig['currentPage'],
             'status' => 'paid'
         ];
     }
-    
+
+    // Determine the actual start date for generating months
+    // Use the earlier of: joinedIn date OR earliest payment date
+    $registrationYear = (int)$joinedIn['year'];
+    $registrationMonth = (int)$joinedIn['month'];
+
+    // If there are payments, check if any are before the registered join date
+    if (!empty($paidMonths)) {
+        // Find the earliest payment
+        $earliestPayment = $paidMonths[0];
+        foreach ($paidMonths as $payment) {
+            if ($payment['year'] < $earliestPayment['year'] ||
+                ($payment['year'] == $earliestPayment['year'] && $payment['month'] < $earliestPayment['month'])) {
+                $earliestPayment = $payment;
+            }
+        }
+
+        // Use the earliest payment date (minus 1 month) as the registration date
+        $earliestYear = $earliestPayment['year'];
+        $earliestMonth = $earliestPayment['month'] - 1;
+        if ($earliestMonth < 1) {
+            $earliestMonth = 12;
+            $earliestYear--;
+        }
+
+        // Use the earlier of joinedIn or earliest payment
+        if ($earliestYear < $registrationYear ||
+            ($earliestYear == $registrationYear && $earliestMonth < $registrationMonth)) {
+            $registrationYear = $earliestYear;
+            $registrationMonth = $earliestMonth;
+        }
+    }
+
     // Generate all months from registration to current
     for ($year = $registrationYear; $year <= $currentYear; $year++) {
         $startMonth = ($year == $registrationYear) ? $registrationMonth + 1 : 1;
         $endMonth = ($year == $currentYear) ? $currentMonth : 12;
-        
+
+        // Skip if start month is after end month (happens when user joins in current month)
+        if ($startMonth > $endMonth && $year == $currentYear) {
+            continue;
+        }
+
         for ($month = $startMonth; $month <= $endMonth; $month++) {
             $isPaid = false;
             $transactionId = '';
-            
+
+            // Check if this month is in the paid months array
             foreach ($paidMonths as $paidMonth) {
                 if ($paidMonth['month'] == $month && $paidMonth['year'] == $year) {
                     $isPaid = true;
@@ -95,7 +131,7 @@ PageRenderer::renderPageHeader($pageConfig['title'], $pageConfig['currentPage'],
                     break;
                 }
             }
-            
+
             $allMonths[] = [
                 'month' => $month,
                 'year' => $year,
@@ -108,7 +144,10 @@ PageRenderer::renderPageHeader($pageConfig['title'], $pageConfig['currentPage'],
             ];
         }
     }
-    
+
+    // Debug: Confirm months generated
+    echo "<script>console.log('✅ Payment History Fixed! Total months:', " . count($allMonths) . ", 'Paid:', " . count(array_filter($allMonths, function($m) { return $m['status'] === 'paid'; })) . ", 'Unpaid:', " . count(array_filter($allMonths, function($m) { return $m['status'] === 'unpaid'; })) . ");</script>";
+
     // Calculate comprehensive stats
     $totalUnpaidMonths = count($unpaidMonths);
     $totalAmountToPay = $totalUnpaidMonths * $monthlyFee;
@@ -303,16 +342,25 @@ PageRenderer::renderPageHeader($pageConfig['title'], $pageConfig['currentPage'],
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php 
-                                // Sort months by year and month (most recent first)
-                                usort($allMonths, function($a, $b) {
-                                    if ($a['year'] == $b['year']) {
-                                        return $b['month'] - $a['month'];
-                                    }
-                                    return $b['year'] - $a['year'];
-                                });
-                                
-                                foreach ($allMonths as $month) : 
+                                <?php
+                                // Check if there are any months to display
+                                if (empty($allMonths)) {
+                                    echo '<tr><td colspan="6" class="text-center text-muted py-5">';
+                                    echo '<i class="fas fa-calendar-check fa-3x mb-3"></i><br>';
+                                    echo '<h5>No Payment History Yet</h5>';
+                                    echo '<p>You joined this month! Your first payment will be due next month.</p>';
+                                    echo '<small class="text-muted">Check back on ' . date('F j, Y', mktime(0, 0, 0, $currentMonth + 1, 1, $currentYear)) . '</small>';
+                                    echo '</td></tr>';
+                                } else {
+                                    // Sort months by year and month (most recent first)
+                                    usort($allMonths, function($a, $b) {
+                                        if ($a['year'] == $b['year']) {
+                                            return $b['month'] - $a['month'];
+                                        }
+                                        return $b['year'] - $a['year'];
+                                    });
+
+                                    foreach ($allMonths as $month) : 
                                     $statusClass = $month['status'] == 'paid' ? 'success' : 
                                                   ($month['is_overdue'] ? 'danger' : 'warning');
                                     $statusText = $month['status'] == 'paid' ? 'Paid' : 
@@ -367,7 +415,10 @@ PageRenderer::renderPageHeader($pageConfig['title'], $pageConfig['currentPage'],
                                             <?php endif; ?>
                                         </td>
                                     </tr>
-                                <?php endforeach; ?>
+                                <?php
+                                    endforeach;
+                                } // End of if-else for empty months check
+                                ?>
                             </tbody>
                         </table>
                     </div>

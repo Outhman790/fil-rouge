@@ -79,12 +79,48 @@ form.addEventListener("submit", (e) => {
     })
       .then((response) => response.json())
       .then((data) => {
-        if (data.success) {
-          showModal(data.success);
+        if (data.success === true || data.success === 1 || data.success === "1") {
+          // Get the add resident modal element
+          const addModalEl = document.getElementById("addResidentModal");
+          const addModal = bootstrap.Modal.getInstance(addModalEl);
+
+          // Hide the add modal if instance exists
+          if (addModal) {
+            addModal.hide();
+          }
+
+          // Wait a bit for modal to start hiding, then clean up and show success
+          setTimeout(() => {
+            // Force close the add modal
+            addModalEl.classList.remove('show');
+            addModalEl.style.display = 'none';
+            addModalEl.setAttribute('aria-hidden', 'true');
+            addModalEl.removeAttribute('aria-modal');
+
+            // Remove all backdrops
+            document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+
+            // Clean up body
+            document.body.classList.remove('modal-open');
+            document.body.style.removeProperty('padding-right');
+            document.body.style.removeProperty('overflow');
+
+            // Reset form
+            form.reset();
+            resetErrorMessages();
+
+            // Show success modal
+            showModal(true);
+
+            // Reload the table data without refreshing the page
+            setTimeout(() => {
+              reloadTableData();
+            }, 500);
+          }, 150);
+
           console.log("success");
-          form.reset();
         } else {
-          showModal(data.success);
+          showModal(false);
           console.log("error occured");
         }
       })
@@ -123,3 +159,88 @@ function showModal(success) {
 
   modalElement.addEventListener("click", closeModal);
 }
+
+// Function to reload table data without page refresh using AJAX
+async function reloadTableData() {
+  try {
+    console.log('Fetching updated table data...');
+
+    // Check if DataTable instance exists
+    if (typeof residentsDataTable !== 'undefined' && residentsDataTable) {
+      console.log('Destroying existing DataTable...');
+      // Destroy the DataTable before updating content
+      residentsDataTable.destroy();
+    }
+
+    // Fetch the entire page HTML
+    const response = await fetch('index.php');
+    const html = await response.text();
+
+    // Parse the HTML
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+
+    // Extract the new table content
+    const newTableBody = doc.querySelector('#datatablesSimple tbody');
+
+    if (newTableBody) {
+      // Get current table body
+      const currentTableBody = document.querySelector('#datatablesSimple tbody');
+
+      if (currentTableBody) {
+        console.log('Updating table content...');
+        // Replace the table body content
+        currentTableBody.innerHTML = newTableBody.innerHTML;
+
+        // Reinitialize DataTable
+        console.log('Reinitializing DataTable...');
+        const tableElement = document.getElementById('datatablesSimple');
+        residentsDataTable = new simpleDatatables.DataTable(tableElement);
+
+        console.log('Table updated successfully with pagination!');
+      }
+    }
+
+    // Update dashboard statistics
+    console.log('Updating dashboard statistics...');
+
+    // Find the resident count in the fetched HTML
+    const residentCountCards = doc.querySelectorAll('.card.bg-success .card-footer p.small');
+    if (residentCountCards.length > 0) {
+      const newResidentCount = residentCountCards[0].textContent.trim();
+
+      // Find and update the current resident count
+      const currentCountElements = document.querySelectorAll('.card.bg-success .card-footer p.small');
+      if (currentCountElements.length > 0) {
+        currentCountElements[0].textContent = newResidentCount;
+        console.log('Dashboard resident count updated to:', newResidentCount);
+      }
+    }
+
+  } catch (error) {
+    console.error('Error reloading table:', error);
+    // Fallback to page reload if AJAX fails
+    location.reload();
+  }
+}
+
+// Check if the URL contains the "add-resident" query parameter
+(function() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const addResident = urlParams.get("add-resident");
+
+  // If the "add-resident" query parameter is present, show the feedback modal
+  if (addResident === "success") {
+    const feedbackModal = new bootstrap.Modal(
+      document.getElementById("successModal-add-resident")
+    );
+    const feedbackMsg = document.querySelector(".modal .mb-add-resident");
+    feedbackMsg.textContent = "Resident added successfully";
+    feedbackModal.show();
+
+    // Clean up URL after showing message
+    setTimeout(() => {
+      window.history.replaceState({}, document.title, "index.php");
+    }, 2000);
+  }
+})();

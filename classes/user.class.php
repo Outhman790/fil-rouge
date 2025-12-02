@@ -128,6 +128,33 @@ class User extends DB
             return false;
         }
     }
+    public function deleteComment($commentId, $residentId)
+    {
+        try {
+            // First verify the comment belongs to this resident
+            $checkQuery = "SELECT resident_id FROM comments WHERE comment_id = :commentId";
+            $pdo = $this->connect();
+            $checkStmt = $pdo->prepare($checkQuery);
+            $checkStmt->bindParam(':commentId', $commentId, PDO::PARAM_INT);
+            $checkStmt->execute();
+            $comment = $checkStmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$comment || $comment['resident_id'] != $residentId) {
+                // Comment doesn't exist or doesn't belong to this user
+                return false;
+            }
+
+            // Delete the comment
+            $query = "DELETE FROM comments WHERE comment_id = :commentId";
+            $stmt = $pdo->prepare($query);
+            $stmt->bindParam(':commentId', $commentId, PDO::PARAM_INT);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            error_log('Database Error in deleteComment: ' . $e->getMessage());
+            return false;
+        }
+    }
+
     public function addLike($announcementId, $residentId)
     {
         try {
